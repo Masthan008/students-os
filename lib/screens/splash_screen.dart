@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../widgets/particle_background.dart';
+import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'auth_screen.dart';
 
@@ -57,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final isBiometricEnabled = box.get('biometric_enabled', defaultValue: false);
     
     if (isBiometricEnabled) {
-      // Import AuthService
+      // Use actual AuthService
       final authenticated = await _authenticateUser();
       if (!authenticated && mounted) {
         // Show retry dialog
@@ -73,10 +74,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<bool> _authenticateUser() async {
     try {
-      // Use local_auth package
-      final localAuth = await Permission.camera.isGranted; // Placeholder for actual auth
-      // In real implementation, use: await LocalAuthentication().authenticate(...)
-      return true; // For now, always return true
+      // Use AuthService for actual biometric authentication
+      return await AuthService.authenticate();
     } catch (e) {
       debugPrint('Biometric auth error: $e');
       return false;

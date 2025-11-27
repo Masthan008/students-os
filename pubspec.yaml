@@ -1,0 +1,82 @@
+name: fluxflow
+description: The Ultimate Student OS by Masthan Valli.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Core Logic
+  provider: ^6.1.1
+  intl: ^0.20.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  http: ^1.2.0
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.2
+  permission_handler: ^11.3.0
+  supabase_flutter: ^2.5.0
+
+  # Camera & AI (Biometrics)
+  camera: ^0.10.5
+  google_mlkit_face_detection: ^0.11.0 # Updated for compatibility
+  image_picker: ^1.0.7
+  geolocator: ^11.0.0
+  local_auth: ^2.1.8
+
+  # QR Code
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^3.5.5
+
+  # Reports
+  pdf: ^3.10.4
+  printing: ^5.11.1
+
+  # Alarm & Audio
+  alarm: ^5.0.0
+  audio_session: ^0.1.21
+  flutter_tts: ^4.0.2
+  flutter_foreground_task: ^8.0.0
+
+  # UI & Design
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  glassmorphism: ^3.0.0
+  # flutter_inset_box_shadow: ^1.0.8 # Removed due to build errors
+  flutter_week_view: ^1.4.4
+  table_calendar: ^3.1.1
+  
+  # Tools
+  flutter_quill: ^10.8.3
+  flutter_colorpicker: ^1.1.0
+  flutter_highlight: ^0.7.0
+  url_launcher: ^6.2.4
+  webview_flutter: ^4.7.0
+  clipboard: ^0.1.3
+  
+  # Math
+  math_expressions: ^2.5.0
+  audioplayers: ^6.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.8
+  hive_generator: ^2.0.1
+
+# CRITICAL OVERRIDES
+dependency_overrides:
+  intl: ^0.20.2
+  flutter_inappwebview: ^6.1.5
+  flutter_keyboard_visibility: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sounds/
+    - assets/images/

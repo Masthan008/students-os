@@ -8,7 +8,8 @@ class NotificationService {
   static String? _lastNotifiedId;
 
   static Future<void> init() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    // Using the transparent notification icon for status bar
+    const androidSettings = AndroidInitializationSettings('notification_icon');
     const settings = InitializationSettings(android: androidSettings);
     
     await _notifications.initialize(settings);

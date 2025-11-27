@@ -16,6 +16,8 @@ import 'providers/focus_provider.dart';
 import 'models/class_session.dart';
 import 'models/attendance_record.dart';
 import 'services/timetable_service.dart';
+import 'services/notification_service.dart';
+import 'services/news_service.dart';
 
 // ---------------------------------------------------------
 // 🔐 SECURITY NOTE: In production, use environment variables
@@ -70,6 +72,14 @@ void main() async {
     
     await TimetableService.initializeTimetable();
     print("✅ Timetable Service Initialized");
+
+    // --- Notification Service Init ---
+    await NotificationService.init();
+    print("✅ Notification Service Initialized");
+    
+    // Start listening for news updates
+    NewsService.listenForUpdates();
+    print("✅ News Notification Listener Started");
 
     // --- Permissions ---
     // Using a separate try-catch because permissions can be finicky on some Android versions

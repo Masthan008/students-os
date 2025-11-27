@@ -1,9 +1,11 @@
 // TODO: PASTE YOUR SUPABASE URL AND KEY HERE
 // Get these from: https://supabase.com/dashboard/project/YOUR_PROJECT/settings/api
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'notification_service.dart';
 
 class NewsService {
   static final SupabaseClient _client = Supabase.instance.client;
+  static bool _isListening = false;
 
   /// Initialize Supabase (call this in main.dart before runApp)
   static Future<void> initialize({
@@ -41,5 +43,27 @@ class NewsService {
         .order('created_at', ascending: false);
     
     return (response as List).cast<Map<String, dynamic>>();
+  }
+
+  /// Listen for new news updates and trigger notifications
+  static void listenForUpdates() {
+    if (_isListening) return; // Prevent multiple listeners
+    _isListening = true;
+
+    _client
+        .from('news')
+        .stream(primaryKey: ['id'])
+        .order('created_at', ascending: false)
+        .limit(1)
+        .listen((List<Map<String, dynamic>> data) {
+      if (data.isNotEmpty) {
+        final latestNews = data.first;
+        final id = latestNews['id']?.toString() ?? '';
+        final title = latestNews['title'] ?? 'New Update';
+        final description = latestNews['description'] ?? 'Check the app for details';
+        
+        NotificationService.showNewsAlert(id, title, description);
+      }
+    });
   }
 }

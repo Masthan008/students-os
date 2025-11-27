@@ -135,6 +135,8 @@ class _NewsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = news['title'] ?? 'Untitled';
     final description = news['description'] ?? '';
+    final imageUrl = news['image_url'];
+    final hasImage = imageUrl != null && imageUrl.toString().isNotEmpty;
     final createdAt = news['created_at'];
     
     String formattedDate = 'Unknown date';
@@ -164,57 +166,106 @@ class _NewsCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              children: [
-                const Icon(
-                  Icons.campaign,
-                  color: Colors.redAccent,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image (if exists)
+          if (hasImage)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              child: Image.network(
+                imageUrl,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 200,
+                    color: Colors.grey.shade800,
+                    child: const Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        color: Colors.white38,
+                        size: 48,
+                      ),
                     ),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    height: 200,
+                    color: Colors.grey.shade800,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.cyanAccent,
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          
+          // Text Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.campaign,
+                      color: Colors.redAccent,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                if (description.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  // Body
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 15,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+                
+                const SizedBox(height: 12),
+                // Footer
+                Text(
+                  formattedDate,
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 12,
                   ),
                 ),
               ],
             ),
-            
-            if (description.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              // Body
-              Text(
-                description,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 15,
-                  height: 1.5,
-                ),
-              ),
-            ],
-            
-            const SizedBox(height: 12),
-            // Footer
-            Text(
-              formattedDate,
-              style: TextStyle(
-                color: Colors.grey.shade500,
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     )
         .animate(delay: Duration(milliseconds: index * 100))

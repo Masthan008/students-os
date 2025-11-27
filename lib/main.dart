@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // Critical Import
 import 'package:provider/provider.dart';
 import 'package:alarm/alarm.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+// Imports from your project structure
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
-import 'screens/ring_screen.dart';
+import 'screens/ring_screen.dart'; // Contains AlarmRingScreen
 import 'modules/calculator/calculator_provider.dart';
 import 'modules/alarm/alarm_provider.dart';
 import 'modules/alarm/alarm_service.dart';
@@ -13,39 +16,78 @@ import 'providers/focus_provider.dart';
 import 'models/class_session.dart';
 import 'models/attendance_record.dart';
 import 'services/timetable_service.dart';
-import 'services/news_service.dart';
+
+// ---------------------------------------------------------
+// 🔐 SECURITY NOTE: In production, use environment variables
+// ---------------------------------------------------------
+const String mySupabaseUrl = 'https://gnlkgstnulfenqxvrsur.supabase.co';
+const String mySupabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdubGtnc3RudWxmZW5xeHZyc3VyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMjg4NjYsImV4cCI6MjA3OTgwNDg2Nn0.aOqkffRPxI4GPM79ravi79gm8ecOG9XXjWCnao59RG0';
 
 void main() async {
+  // 1. Ensure Bindings FIRST
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Hive
-  await Hive.initFlutter();
-  
-  // Register Adapters
-  Hive.registerAdapter(ClassSessionAdapter());
-  Hive.registerAdapter(AttendanceRecordAdapter());
-  
-  // Open Boxes
-  await Hive.openBox('calculator_history');
-  await Hive.openBox<ClassSession>('class_sessions');
-  await Hive.openBox('user_prefs');
-  await Hive.openBox('attendance_records');
 
-  // Initialize Supabase
-  await NewsService.initialize(
-    url: 'YOUR_SUPABASE_URL',
-    anonKey: 'YOUR_SUPABASE_ANON_KEY',
-  );
+  // 2. Wrap EVERYTHING in a safety block
+  try {
+    // --- Hive Init ---
+    await Hive.initFlutter();
+    
+    // Safety check for Adapters (Fixes "Adapter already registered" crash)
+    try {
+      if (!Hive.isAdapterRegistered(ClassSessionAdapter().typeId)) {
+        Hive.registerAdapter(ClassSessionAdapter());
+      }
+      if (!Hive.isAdapterRegistered(AttendanceRecordAdapter().typeId)) {
+        Hive.registerAdapter(AttendanceRecordAdapter());
+      }
+    } catch (e) {
+      print("⚠️ Adapter Warning: $e");
+    }
+    
+    // Open Boxes
+    await Hive.openBox('calculator_history');
+    await Hive.openBox<ClassSession>('class_sessions');
+    await Hive.openBox('user_prefs');
+    await Hive.openBox('attendance_records');
+    
+    print("✅ Hive Initialized Successfully");
 
-  // Initialize Alarm Service
-  await AlarmService.init();
-  
-  // Initialize Timetable (seeds on first run)
-  await TimetableService.initializeTimetable();
+    // --- Supabase Init ---
+    // Safety check for Placeholder URL (Fixes "Invalid Argument" crash)
+    if (mySupabaseUrl.contains('YOUR_SUPABASE_URL')) {
+      print("⚠️ WARNING: Supabase Keys not set! Skipping Cloud Connection.");
+    } else {
+      await Supabase.initialize(
+        url: mySupabaseUrl,
+        anonKey: mySupabaseKey,
+      );
+      print("✅ Supabase Initialized Successfully");
+    }
 
-  // Request Permissions
-  await _requestPermissions();
+    // --- Services Init ---
+    await AlarmService.init();
+    print("✅ Alarm Service Initialized");
+    
+    await TimetableService.initializeTimetable();
+    print("✅ Timetable Service Initialized");
 
+    // --- Permissions ---
+    // Using a separate try-catch because permissions can be finicky on some Android versions
+    try {
+      await _requestPermissions();
+      print("✅ Permissions Requested");
+    } catch (e) {
+      print("⚠️ Permission Request Warning: $e");
+    }
+
+  } catch (e, stackTrace) {
+    // 3. THE SAFETY NET
+    // If anything above fails, print it, but DO NOT STOP the app.
+    print("❌ CRITICAL ERROR during init: $e");
+    print("Stack trace: $stackTrace");
+  }
+
+  // 4. Launch App (This runs even if Init failed)
   runApp(
     MultiProvider(
       providers: [
@@ -66,11 +108,15 @@ class FluxFlowApp extends StatefulWidget {
 }
 
 class _FluxFlowAppState extends State<FluxFlowApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
+    // Listen for Alarm Ring
     AlarmService.ringStream.listen((alarmSettings) {
-      // Navigate to Alarm Ring Screen
+      debugPrint("⏰ ALARM RINGING! ID: ${alarmSettings.id}");
+      // FIX 2 from Diagnostic Report: Use correct class 'AlarmRingScreen'
       navigatorKey.currentState?.push(
         MaterialPageRoute(
           builder: (context) => AlarmRingScreen(alarmSettings: alarmSettings),
@@ -78,8 +124,6 @@ class _FluxFlowAppState extends State<FluxFlowApp> {
       );
     });
   }
-
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -94,21 +138,13 @@ class _FluxFlowAppState extends State<FluxFlowApp> {
 }
 
 Future<void> _requestPermissions() async {
-  // Notification permission (Android 13+)
   if (await Permission.notification.isDenied) {
-    final status = await Permission.notification.request();
-    debugPrint('Notification permission: $status');
+    await Permission.notification.request();
   }
-  
-  // Exact alarm permission (Android 14+)
   if (await Permission.scheduleExactAlarm.isDenied) {
-    final status = await Permission.scheduleExactAlarm.request();
-    debugPrint('Schedule exact alarm permission: $status');
+    await Permission.scheduleExactAlarm.request();
   }
-  
-  // System alert window permission (for full-screen intent)
   if (await Permission.systemAlertWindow.isDenied) {
-    final status = await Permission.systemAlertWindow.request();
-    debugPrint('System alert window permission: $status');
+    await Permission.systemAlertWindow.request();
   }
 }

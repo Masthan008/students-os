@@ -18,9 +18,14 @@ class AttendanceScreen extends StatefulWidget {
 class _AttendanceScreenState extends State<AttendanceScreen> {
   bool _isLoading = false;
   double? _locationAccuracy;
+  double? _distanceToCollege;
   String _statusMessage = "Ready to Check-In";
   ClassSession? _currentClass;
   bool _isTeacher = false;
+  
+  // RGMCET College Coordinates
+  static const double collegeLatitude = 15.4789;
+  static const double collegeLongitude = 78.4886;
 
   @override
   void initState() {
@@ -75,12 +80,25 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         timeLimit: const Duration(seconds: 6),
       );
 
+      // Calculate distance to college
+      final distance = Geolocator.distanceBetween(
+        position.latitude,
+        position.longitude,
+        collegeLatitude,
+        collegeLongitude,
+      );
+
       setState(() {
         _locationAccuracy = position.accuracy;
+        _distanceToCollege = distance;
       });
 
-      // TODO: Verify location is within campus bounds
-      // For now, just mark attendance
+      // Verify location is within campus bounds (500 meters)
+      if (distance > 500) {
+        _showError("You are ${distance.toStringAsFixed(0)}m away from college. Must be within 500m.");
+        return;
+      }
+      
       _markAttendance(position);
       
     } on TimeoutException {
@@ -207,15 +225,28 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                       
                       const SizedBox(height: 20),
                       
-                      // Location Accuracy Display
-                      if (_locationAccuracy != null)
-                        Text(
-                          "Current Location Accuracy: ${_locationAccuracy!.toStringAsFixed(1)} meters",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      // Distance and Accuracy Display
+                      if (_distanceToCollege != null)
+                        Column(
+                          children: [
+                            Text(
+                              "Distance to College: ${_distanceToCollege!.toStringAsFixed(1)} meters",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: _distanceToCollege! <= 500 ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (_locationAccuracy != null)
+                              Text(
+                                "GPS Accuracy: ±${_locationAccuracy!.toStringAsFixed(1)}m",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                          ],
                         ),
                       
                       const SizedBox(height: 20),

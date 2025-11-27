@@ -69,10 +69,10 @@ class _QrHandshakeScreenState extends State<QrHandshakeScreen> with SingleTicker
   void _handleScannedCode(String code) {
     if (_isProcessing) return; // Prevent duplicate processing
     
+    setState(() => _isProcessing = true);
+    
     try {
       final data = jsonDecode(code);
-      
-      setState(() => _isProcessing = true);
       
       if (widget.isTeacher) {
         // Teacher scanning Student
@@ -194,9 +194,11 @@ class _QrHandshakeScreenState extends State<QrHandshakeScreen> with SingleTicker
                 controller: _scannerController,
                 onDetect: (capture) {
                   final List<Barcode> barcodes = capture.barcodes;
-                  if (barcodes.isNotEmpty) {
-                    final String code = barcodes.first.rawValue ?? "---";
-                    _handleScannedCode(code);
+                  for (final barcode in barcodes) {
+                    if (barcode.rawValue != null) {
+                      _handleScannedCode(barcode.rawValue!);
+                      break; // Stop after first valid code
+                    }
                   }
                 },
               ),

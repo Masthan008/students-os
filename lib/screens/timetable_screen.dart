@@ -186,7 +186,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   Widget _buildClassCard(BuildContext context, ClassSession session) {
-    final timeFormat = DateFormat('HH:mm');
+    final timeFormat = DateFormat('h:mm a'); // 12-hour format with AM/PM
     final startTime = timeFormat.format(session.startTime);
     final endTime = timeFormat.format(session.endTime);
 

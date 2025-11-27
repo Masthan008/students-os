@@ -142,7 +142,7 @@ class _NewsCard extends StatelessWidget {
     String formattedDate = 'Unknown date';
     if (createdAt != null) {
       try {
-        final date = DateTime.parse(createdAt);
+        final date = DateTime.parse(createdAt).toLocal(); // Convert UTC to IST
         formattedDate = DateFormat('MMM dd, yyyy • hh:mm a').format(date);
       } catch (e) {
         formattedDate = createdAt.toString();

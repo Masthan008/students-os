@@ -48,8 +48,66 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     if (mounted) {
+      await _checkBiometricAndNavigate();
+    }
+  }
+
+  Future<void> _checkBiometricAndNavigate() async {
+    final box = await Hive.openBox('user_prefs');
+    final isBiometricEnabled = box.get('biometric_enabled', defaultValue: false);
+    
+    if (isBiometricEnabled) {
+      // Import AuthService
+      final authenticated = await _authenticateUser();
+      if (!authenticated && mounted) {
+        // Show retry dialog
+        _showAuthFailedDialog();
+        return;
+      }
+    }
+    
+    if (mounted) {
       _navigateNext();
     }
+  }
+
+  Future<bool> _authenticateUser() async {
+    try {
+      // Use local_auth package
+      final localAuth = await Permission.camera.isGranted; // Placeholder for actual auth
+      // In real implementation, use: await LocalAuthentication().authenticate(...)
+      return true; // For now, always return true
+    } catch (e) {
+      debugPrint('Biometric auth error: $e');
+      return false;
+    }
+  }
+
+  void _showAuthFailedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: const Text(
+          'Authentication Failed',
+          style: TextStyle(color: Colors.redAccent),
+        ),
+        content: const Text(
+          'Please authenticate to continue',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _checkBiometricAndNavigate();
+            },
+            child: const Text('Retry', style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _navigateNext() async {

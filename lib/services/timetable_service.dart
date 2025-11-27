@@ -5,7 +5,7 @@ import '../models/class_session.dart';
 import '../modules/alarm/alarm_service.dart';
 
 class TimetableService {
-  static const String _seedFlagKey = 'timetable_v5';
+  static const String _seedFlagKey = 'timetable_v6';
   static const String _boxName = 'class_sessions';
 
   /// Initialize timetable by seeding data on first run
@@ -16,11 +16,11 @@ class TimetableService {
       final isSeeded = prefs.getBool(_seedFlagKey) ?? false;
 
       if (isSeeded) {
-        debugPrint('Timetable already seeded (v5), skipping initialization');
+        debugPrint('Timetable already seeded (v6), skipping initialization');
         return;
       }
 
-      debugPrint('Seeding timetable v5...');
+      debugPrint('Seeding timetable v6...');
 
       // Ensure box is open
       final box = Hive.isBoxOpen(_boxName)
@@ -82,12 +82,12 @@ class TimetableService {
       // Mark as seeded only after successful save
       if (savedCount == sessions.length) {
         await prefs.setBool(_seedFlagKey, true);
-        debugPrint('Timetable v5 seeded successfully with $alarmsScheduled alarms');
+        debugPrint('Timetable v6 seeded successfully with $alarmsScheduled alarms');
       } else {
         debugPrint('Warning: Expected ${sessions.length} sessions but saved $savedCount');
       }
     } catch (e) {
-      debugPrint('Error initializing timetable v3: $e');
+      debugPrint('Error initializing timetable v6: $e');
     }
   }
 
@@ -155,7 +155,7 @@ class TimetableService {
         subjectName: 'LAAC',
         dayOfWeek: 1,
         startTime: createTime(13, 0),
-        endTime: createTime(13, 50),
+        endTime: createTime(14, 40),
       ),
       ClassSession(
         id: '1_CHE_1500',
@@ -176,11 +176,11 @@ class TimetableService {
         endTime: createTime(11, 50),
       ),
       ClassSession(
-        id: '2_IPLAB_1350',
+        id: '2_IPLAB_1300',
         subjectName: 'IP LAB',
         dayOfWeek: 2,
-        startTime: createTime(13, 50),
-        endTime: createTime(15, 0),
+        startTime: createTime(13, 0),
+        endTime: createTime(14, 50),
       ),
       ClassSession(
         id: '2_SS_1500',
@@ -201,10 +201,10 @@ class TimetableService {
         endTime: createTime(11, 50),
       ),
       ClassSession(
-        id: '3_BME_1350',
+        id: '3_BME_1300',
         subjectName: 'BME',
         dayOfWeek: 3,
-        startTime: createTime(13, 50),
+        startTime: createTime(13, 0),
         endTime: createTime(14, 40),
       ),
       ClassSession(
@@ -265,10 +265,10 @@ class TimetableService {
         endTime: createTime(11, 50),
       ),
       ClassSession(
-        id: '5_LAAC_1350',
+        id: '5_LAAC_1300',
         subjectName: 'LAAC',
         dayOfWeek: 5,
-        startTime: createTime(13, 50),
+        startTime: createTime(13, 0),
         endTime: createTime(14, 40),
       ),
       ClassSession(
@@ -276,11 +276,11 @@ class TimetableService {
         subjectName: 'EAA',
         dayOfWeek: 5,
         startTime: createTime(15, 0),
-        endTime: createTime(16, 50),
+        endTime: createTime(17, 0),
       ),
     ]);
 
-    // Saturday (6) - NEW in v5.0
+    // Saturday (6) - NEW in v6.0
     sessions.addAll([
       ClassSession(
         id: '6_CHE_0900',
@@ -297,11 +297,11 @@ class TimetableService {
         endTime: createTime(11, 50),
       ),
       ClassSession(
-        id: '6_IP_1350',
+        id: '6_IP_1300',
         subjectName: 'IP',
         dayOfWeek: 6,
-        startTime: createTime(13, 50),
-        endTime: createTime(15, 0),
+        startTime: createTime(13, 0),
+        endTime: createTime(14, 40),
       ),
       ClassSession(
         id: '6_CE_1500',

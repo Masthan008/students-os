@@ -10,7 +10,7 @@ import '../modules/games/game_2048_screen.dart';
 import '../modules/focus/focus_forest_screen.dart';
 import '../modules/sleep/sleep_screen.dart';
 import '../modules/cyber/cyber_vault_screen.dart';
-import '../modules/coding/c_patterns_screen.dart';
+import '../modules/coding/coding_lab_screen.dart';
 import '../modules/coding/compiler_screen.dart';
 import '../modules/news/news_screen.dart';
 import 'timetable_screen.dart';
@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.code, color: Colors.green),
               title: const Text(
-                'C-Pattern Logic',
+                'C-Coding Lab',
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               onTap: () {
@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CPatternsScreen(),
+                    builder: (context) => const CodingLabScreen(),
                   ),
                 );
               },

@@ -1,95 +1,111 @@
-This is the final polish\!
+This is a crucial round of fixes. You are paying attention to the fine details, which makes the difference between a "Project" and a "Product."
 
-You are seeing the **Flutter Logo** because we haven't generated the native Android assets for your custom logo yet.
+Here is the breakdown of the fixes and the reality check on Notifications.
 
-Also, regarding the **"Only when open"** issue:
+### 🛑 The "Closed App" Notification Reality
 
-  * **The Reality:** Since we are using **Supabase Realtime (Stream)** instead of Firebase Cloud Messaging (FCM), the app *must* be running (even in the background/minimized) to "hear" the new message.
-  * If you kill the app (swipe it away), the "ear" is removed, and it cannot hear the notification.
-  * **The Fix:** Real "Killed App" notifications require a paid/complex server (FCM). For a free, student-focused app, the current method is the industry standard approach.
+You asked: *"When the app is closed, notifications are not coming."*
+
+**The Truth:** Supabase Realtime works via a live connection (WebSocket). When you swipe the app away (Close it), that connection is cut.
+
+  * **To fix this:** You would need **Firebase Cloud Messaging (FCM)** + a Server Function to "Push" the message. This requires a Credit Card for Google Cloud (even if free tier).
+  * **My Advice:** For now, accept that notifications only arrive when the app is in the background or open. This keeps your project **100% Free** and **No Credit Card Required**.
 
 -----
 
-### 🎨 How to Fix the Notification Icon
+### 🛠️ The Fixes Plan
 
-We will use a package to automatically generate all the Android icons (different sizes) from your logo file.
+1.  **Timetable Correction:** I analyzed your image. The timings are indeed unique (e.g., 9:00-10:40 is a long block, others are 50 mins). I will update the Seeder to match this **exactly** and force **12-Hour Format (IST)** in the UI.
+2.  **News Timezone:** We will add `.toLocal()` to the timestamp code so it shows Indian Standard Time (IST) instead of UTC.
+3.  **C Programs:** We will add a new tab "Programs" next to "Patterns" with code like Fibonacci, Prime, Palindrome, etc., including a **Copy Button**.
+4.  **Biometric Logic:** We will wire up the switch in Settings to actually trigger the Fingerprint check on the Splash Screen.
 
-### 🚀 **NovaMind Update 28.0: "Icon Generator" Master Prompt**
+Here is the **Master Prompt** to execute these 4 fixes.
+
+-----
+
+### 🚀 **NovaMind Update 29.0: "Precision & Logic Fix" Master Prompt**
 
 **Copy and paste this ENTIRE block into your IDE Agent.**
 
 ````markdown
-**Role:** You are a Lead Flutter Designer.
-**Task:** Update the App Icon and Notification Icon to replace the default Flutter logo.
+**Role:** You are a Lead Flutter Developer.
+**Task:** Correct Timetable Data, Fix Timezones, Enable Biometrics, and Add C-Programs.
 
-### 📦 Phase 1: Icon Generation Setup
-**Action:** Update `pubspec.yaml` to include the generator config.
-1.  **Add `flutter_launcher_icons`:** (It should already be in dev_dependencies).
-2.  **Add Configuration:** Paste this block at the bottom of `pubspec.yaml`:
+### 📅 Fix 1: Timetable Data & Formatting (`lib/services/timetable_service.dart`)
+**Action:** Update the `initializeTimetable` function.
+**1. Exact Timings (Based on User Image):**
+   * **Seed Key:** Change to `'timetable_v6'` (Force re-seed).
+   * **Data Logic (Use 24h for storage, UI converts later):**
+     * **Mon:** BCE (09:00-10:40), CE (11:00-11:50), LAAC (1:00-2:40), CHE (3:00-5:00).
+     * **Tue:** EWS (09:00-11:50), IP LAB (1:00-2:50), SS (3:00-5:00).
+     * **Wed:** EC LAB (09:00-11:50), BME (1:00-2:40), IP LAB (3:00-5:00).
+     * **Thu:** IP (09:00-10:40), LAAC (11:00-11:50), CHE (1:00-1:50), CE LAB (1:50-5:00).
+     * **Fri:** CE (09:00-10:40), BME (11:00-11:50), LAAC (1:00-2:40), EAA (3:00-5:00).
+     * **Sat:** CHE (09:00-10:40), BCE (11:00-11:50), IP (1:00-2:40), CE (3:00-5:00).
 
-```yaml
-flutter_launcher_icons:
-  android: "ic_launcher"
-  ios: true
-  image_path: "assets/images/logo.png" # Ensure you have a logo.png here
-  min_sdk_android: 21
-  web:
-    generate: true
-    image_path: "assets/images/logo.png"
+**UI Update (`lib/screens/timetable_screen.dart`):**
+   * Use `DateFormat('h:mm a')` (12-hour format) for displaying start/end times.
+
+### 🔐 Fix 2: Biometric Lock Logic (`lib/screens/splash_screen.dart`)
+**Action:** Enforce security on startup.
+**Logic:**
+   * inside `_checkPermissions()` or navigation logic:
+   * `bool isBiometricOn = Hive.box('user_prefs').get('biometric_enabled', defaultValue: false);`
+   * If `true`: Call `AuthService.authenticate()`.
+     * If Auth Success -> Go Home.
+     * If Auth Fail -> Stay on Splash / Show Retry Button.
+   * If `false`: Go Home immediately.
+
+### 📰 Fix 3: News Timezone (`lib/screens/news_screen.dart`)
+**Action:** Fix the timestamp display.
+**Code:**
+   ```dart
+   // Inside your List Builder
+   DateTime created = DateTime.parse(news['created_at']).toLocal(); // Convert UTC to IST
+   String timeString = DateFormat('dd MMM, h:mm a').format(created);
 ````
 
-### 🖼️ Phase 2: Notification Specific Icon
+### 💻 Fix 4: C-Programs Module (`lib/modules/coding/c_patterns_screen.dart`)
 
-**Action:** Create a transparent version for the Status Bar.
+**Action:** Rename to `CodingLabScreen` and add a new Tab.
+**UI:**
 
-  * Android requires a **Transparent (White)** icon for the top bar (small icon). If you use a colored square, it will show as a grey block.
-  * **Task:** Ask the user to put a transparent PNG named `notification_icon.png` in `assets/images/`.
-
-### 🔔 Phase 3: Update `notification_service.dart`
-
-**Action:** Tell the plugin to use the new icon.
-**Code Update:**
-
-```dart
-// Change this line in init()
-const androidSettings = AndroidInitializationSettings('ic_launcher'); // Uses the new App Icon
-
-// OR if you added a specific transparent icon:
-// const androidSettings = AndroidInitializationSettings('notification_icon');
-```
+1.  **Tabs:** [Patterns] [Programs].
+2.  **Programs List:** Add 10 standard B.Tech programs (Hello World, Prime Number, Fibonacci, Armstrong, Factorial, Palindrome, Bubble Sort, Matrix Mul, Swap Vars, Pointer Basics).
+3.  **Detail View:** Same as Patterns (Black Console for Output, HighlightView for Code, Copy Button).
 
 ### 📝 EXECUTION PLAN
 
-1.  **Update `pubspec.yaml`** with the config.
-2.  **Update `notification_service.dart`**.
+1.  **Update `timetable_service.dart`** (New data).
+2.  **Update `timetable_screen.dart`** (12h Format).
+3.  **Update `splash_screen.dart`** (Biometric Check).
+4.  **Update `news_screen.dart`** (Timezone).
+5.  **Update `c_patterns_screen.dart`** (Add Programs).
 
-**Action:** Start by updating **`pubspec.yaml`**.
+**Action:** Start by generating the **`timetable_service.dart`** and **`splash_screen.dart`**.
 
-````
+```
 
 ---
 
-### ⚠️ MANUAL STEPS (Crucial)
+### 💡 New Feature Ideas (Student Helpful)
 
-The AI cannot paint the icon for you. You must do this:
+Since you asked for more ideas, here are 3 lightweight features that fit your "Offline/Student" theme:
 
-1.  **Get your Logo:**
-    * Take your app logo image.
-    * Rename it to **`logo.png`**.
-    * Put it inside the folder: **`assets/images/`**.
+1.  **"Syllabus Tracker":**
+    * A simple checklist. You (Developer) pre-load the list of Units for CSE (e.g., "Unit 1: Pointers", "Unit 2: Arrays").
+    * Students tick the box ✅ when they finish studying it.
+    * **Visual:** A progress bar showing "40% Syllabus Completed".
 
-2.  **Run the Generator:**
-    * Open your terminal in VS Code.
-    * Run this command:
-        ```bash
-        dart run flutter_launcher_icons
-        ```
-    * *You will see "Successfully generated launcher icons".*
+2.  **"Viva Voice Vault":**
+    * A section in the Cyber/Code module.
+    * List of top 50 common Interview/Lab questions (e.g., "What is a pointer?", "Diff between malloc and calloc").
+    * Tap to reveal the answer.
 
-3.  **Rebuild the App:**
-    * The icons are "baked" into the APK. You must rebuild.
-    * `flutter clean`
-    * `flutter build apk --release --split-per-abi`
+3.  **"Placement Countdown":**
+    * A widget showing "Days left until Final Year".
+    * It creates a sense of urgency to study.
 
-**Once you install this new APK, the Flutter Face will be gone forever!**
-````
+**Do you want to add the "Syllabus Tracker" in the next update?**
+```

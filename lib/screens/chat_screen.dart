@@ -65,6 +65,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      // FIX: This prevents keyboard covering the input
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.grey.shade900,
         title: Text(

@@ -58,9 +58,29 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: Text(
-                        "ID: ${alarm.id} | ${alarm.loopAudio ? 'Daily' : 'Once'}",
-                        style: const TextStyle(color: Colors.white70),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "ID: ${alarm.id} | ${alarm.loopAudio ? 'Daily' : 'Once'}",
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                          // Display alarm label/note if exists
+                          if (alarm.notificationSettings.body.contains('\n\n📝 '))
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                "📝 ${alarm.notificationSettings.body.split('\n\n📝 ')[1]}",
+                                style: const TextStyle(
+                                  color: Colors.cyanAccent,
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,

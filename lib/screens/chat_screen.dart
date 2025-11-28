@@ -168,7 +168,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                   return ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20), // Extra bottom padding
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final msg = messages[index];
@@ -193,10 +193,10 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          // Input Bar - Pinned to bottom (NOT using bottomNavigationBar)
+          // Input Bar - Pinned to bottom with extra padding for bottom nav
           Container(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 10, // Safe Area fix
+              bottom: 80, // Fixed padding to clear bottom navigation bar (typically 56-80px)
               left: 10,
               right: 10,
               top: 10,

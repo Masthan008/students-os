@@ -33,16 +33,45 @@ class _AlarmScreenState extends State<AlarmScreen> {
           onPressed: () => _showAddAlarmDialog(context),
         ),
       ),
-      body: alarms.isEmpty
-          ? const Center(
-              child: Text(
-                "No Alarms Set",
-                style: TextStyle(color: Colors.white70, fontSize: 18),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100), // Bottom padding for FAB/Nav
-              itemCount: alarms.length,
+      body: Column(
+        children: [
+          // Do Not Disturb Warning
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.orange.withOpacity(0.5)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Please ensure "Do Not Disturb" allows Alarms',
+                    style: TextStyle(
+                      color: Colors.orange.shade200,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: alarms.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No Alarms Set",
+                      style: TextStyle(color: Colors.white70, fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100), // Bottom padding for FAB/Nav
+                    itemCount: alarms.length,
               itemBuilder: (context, index) {
                 final alarm = alarms[index];
                 
@@ -123,6 +152,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 );
               },
             ),
+          ),
+        ],
+      ),
     );
   }
 

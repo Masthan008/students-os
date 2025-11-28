@@ -18,6 +18,8 @@ import 'calendar_screen.dart';
 import 'attendance_screen.dart';
 import 'teacher_dashboard_screen.dart';
 import 'settings_screen.dart';
+import 'about_screen.dart';
+import 'chat_screen.dart';
 import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const AlarmScreen(),
     const CalendarScreen(),
     const AttendanceScreen(),
+    const ChatScreen(),
   ];
 
   @override
@@ -81,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.grey.shade900,
               ),
               child: const Text(
-                'NovaMind Menu',
+                'NovaMind OS',
                 style: TextStyle(
                   color: Colors.cyanAccent,
                   fontSize: 28,
@@ -203,6 +206,23 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.info, color: Colors.cyanAccent),
+              title: const Text(
+                'About Us',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AboutScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.grey),
               title: const Text(
                 'Settings',
                 style: TextStyle(color: Colors.white, fontSize: 18),

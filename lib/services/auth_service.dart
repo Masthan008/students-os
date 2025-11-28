@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:local_auth/local_auth.dart';
 
@@ -10,24 +11,44 @@ class AuthService {
   static String? get userName => _box.get('user_name');
   static String? get userId => _box.get('user_id'); // Roll No
 
+  // 1. Authenticate (The Real Biometric Check)
   static Future<bool> authenticate() async {
-    final bool canAuthenticateWithBiometrics = await _auth.canCheckBiometrics;
-    final bool canAuthenticate = canAuthenticateWithBiometrics || await _auth.isDeviceSupported();
-
-    if (!canAuthenticate) return true; // Fallback if no biometrics
-
     try {
+      // Check if hardware is available
+      final bool canAuthenticateWithBiometrics = await _auth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await _auth.isDeviceSupported();
+
+      if (!canAuthenticate) {
+        debugPrint("⚠️ Biometrics not available on this device.");
+        return true; // Fallback: Allow entry if no hardware exists
+      }
+
+      // Trigger the Dialog
       return await _auth.authenticate(
-        localizedReason: 'Please authenticate to access FluxFlow',
+        localizedReason: 'Scan to access NovaMind',
         options: const AuthenticationOptions(
           stickyAuth: true,
-          biometricOnly: false,
+          biometricOnly: false, // Allows PIN backup if biometric fails
         ),
       );
-    } catch (e) {
-      debugPrint('Auth Error: $e');
+    } on PlatformException catch (e) {
+      debugPrint("Auth Error: $e");
       return false;
     }
+  }
+
+  // 2. Student Entry (Local Save)
+  static Future<void> studentEntry(String name, String id, String branch) async {
+    var box = Hive.box('user_prefs');
+    await box.put('user_name', name);
+    await box.put('user_id', id);
+    await box.put('branch', branch);
+    await box.put('user_role', 'student');
+  }
+
+  // 3. Logout
+  static Future<void> logout() async {
+    await Hive.box('user_prefs').clear();
   }
 
   static Future<void> showSetupDialog(BuildContext context, VoidCallback onComplete) async {

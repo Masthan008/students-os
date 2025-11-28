@@ -53,6 +53,73 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  Future<void> _showTeacherPinDialog() async {
+    final TextEditingController pinController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: Text(
+          'Faculty Login',
+          style: GoogleFonts.orbitron(color: Colors.cyanAccent),
+        ),
+        content: TextField(
+          controller: pinController,
+          obscureText: true,
+          keyboardType: TextInputType.number,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'Enter PIN',
+            hintStyle: TextStyle(color: Colors.grey.shade600),
+            filled: true,
+            fillColor: Colors.black54,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Colors.cyanAccent),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (pinController.text == '1234') {
+                final box = Hive.box('user_prefs');
+                await box.put('user_role', 'teacher');
+                await box.put('user_name', 'Faculty');
+                
+                if (mounted) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Invalid PIN'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.cyanAccent,
+            ),
+            child: const Text('Login', style: TextStyle(color: Colors.black)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +139,21 @@ class _AuthScreenState extends State<AuthScreen> {
                   letterSpacing: 2,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
+              
+              // Teacher Entry Button
+              TextButton.icon(
+                onPressed: _showTeacherPinDialog,
+                icon: const Icon(Icons.admin_panel_settings, color: Colors.amber),
+                label: Text(
+                  'Faculty Login',
+                  style: GoogleFonts.montserrat(
+                    color: Colors.amber,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               
               // Digital ID Card Container
               Container(

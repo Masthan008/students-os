@@ -110,22 +110,41 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateNext() async {
-    // Check if user is already registered
-    final box = await Hive.openBox('user_prefs');
-    final userRole = box.get('user_role');
+    // 1. Check if user is logged in (has a role)
+    final userBox = Hive.box('user_prefs');
+    final String? role = userBox.get('user_role');
 
-    if (mounted) {
-      if (userRole == null) {
-        // Go to Registration
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AuthScreen()),
-        );
-      } else {
-        // Go to Home
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+    if (role == null) {
+      // New User -> Auth Screen
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AuthScreen()),
         );
       }
+      return;
+    }
+
+    // 2. CHECK BIOMETRIC LOCK (The New Logic)
+    final bool isBiometricEnabled = userBox.get('biometric_enabled', defaultValue: false);
+    
+    if (isBiometricEnabled) {
+      final bool authenticated = await AuthService.authenticate();
+      if (!authenticated) {
+        // If they failed/cancelled, Show retry dialog
+        if (mounted) {
+          _showAuthFailedDialog();
+        }
+        return; 
+      }
+    }
+
+    // 3. Navigate to correct dashboard
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
     }
   }
 

@@ -144,8 +144,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Attendance"),
+        backgroundColor: Colors.grey.shade900,
+        title: const Text("Attendance", style: TextStyle(color: Colors.cyanAccent)),
+        iconTheme: const IconThemeData(color: Colors.cyanAccent),
         actions: [
           if (!_isTeacher)
             IconButton(
@@ -154,26 +157,35 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             ),
         ],
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 20),
-                  Text(
-                    _statusMessage,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            )
-          : Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
+      body: SingleChildScrollView(
+        child: Container(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height - 100,
+          ),
+          child: _isLoading
+            ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const CircularProgressIndicator(color: Colors.cyanAccent),
+                    const SizedBox(height: 20),
+                    Text(
+                      _statusMessage,
+                      style: const TextStyle(
+                        fontSize: 16, 
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                     if (!_isTeacher) ...[
                       // Student UI
                       const Icon(Icons.fingerprint, size: 80, color: Colors.blue),
@@ -301,7 +313,9 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   ],
                 ),
               ),
-            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -30,6 +30,7 @@ class GlassBottomNav extends StatelessWidget {
               _buildNavItem(1, Icons.alarm_outlined, Icons.alarm, "Alarm"),
               _buildNavItem(2, Icons.event_outlined, Icons.event, "Calendar"),
               _buildNavItem(3, Icons.verified_user_outlined, Icons.verified_user, "Attend"),
+              _buildNavItem(4, Icons.chat_bubble_outline, Icons.chat_bubble, "Hub"),
             ],
           ),
         ),

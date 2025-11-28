@@ -325,6 +325,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             
+            const SizedBox(height: 12),
+            
+            // 24-Hour Format Toggle
+            ValueListenableBuilder(
+              valueListenable: Hive.box('user_prefs').listenable(),
+              builder: (context, Box box, _) {
+                final use24h = box.get('use24h', defaultValue: false);
+                return Card(
+                  color: Colors.grey.shade900,
+                  child: SwitchListTile(
+                    title: const Text(
+                      'Use 24-Hour Format',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    subtitle: Text(
+                      use24h ? 'Time shown as 14:30' : 'Time shown as 2:30 PM',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    value: use24h,
+                    onChanged: (value) async {
+                      await box.put('use24h', value);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.cyanAccent,
+                          content: Text(
+                            value ? '24-hour format enabled' : '12-hour format enabled',
+                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                    activeColor: Colors.cyanAccent,
+                    secondary: Icon(
+                      Icons.access_time,
+                      color: use24h ? Colors.cyanAccent : Colors.grey,
+                    ),
+                  ),
+                );
+              },
+            ),
+            
             const SizedBox(height: 32),
             
             // App Info

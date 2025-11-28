@@ -8,6 +8,22 @@ class TimetableService {
   static const String _seedFlagKey = 'timetable_v6';
   static const String _boxName = 'class_sessions';
 
+  // Subject Name Decoder Map
+  static const Map<String, String> subjectNames = {
+    'IP': 'Introduction to Programming',
+    'LAAC': 'Linear Algebra & Advanced Calculus',
+    'CE': 'Communicative English',
+    'CHE': 'Chemistry',
+    'BME': 'Basic Mechanical Engineering',
+    'BCE': 'Basic Civil Engineering',
+    'IP LAB': 'Computer Programming Lab',
+    'EC LAB': 'Engineering Chemistry Lab',
+    'EWS': 'Engineering Workshop',
+    'EAA': 'Sports & Yoga',
+    'SS': 'Soft Skills',
+    'CE LAB': 'Communicative English Lab',
+  };
+
   /// Initialize timetable by seeding data on first run
   static Future<void> initializeTimetable() async {
     try {

@@ -64,9 +64,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      // FIX: This prevents keyboard covering the input
-      resizeToAvoidBottomInset: true,
+      backgroundColor: const Color(0xFF121212), // Dark grey background
+      resizeToAvoidBottomInset: true, // Critical for keyboard
       appBar: AppBar(
         backgroundColor: Colors.grey.shade900,
         title: Text(
@@ -80,155 +79,183 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
-          // Messages List
+          // Messages List - Takes all available space
           Expanded(
-            child: StreamBuilder<List<Map<String, dynamic>>>(
-              stream: Supabase.instance.client
-                  .from('chat_messages')
-                  .stream(primaryKey: ['id'])
-                  .order('created_at', ascending: true),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error, color: Colors.red, size: 48),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Error loading messages',
-                          style: GoogleFonts.montserrat(color: Colors.white),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${snapshot.error}',
-                          style: GoogleFonts.montserrat(
-                            color: Colors.grey,
-                            fontSize: 12,
+            child: Container(
+              decoration: BoxDecoration(
+                // Subtle pattern background
+                color: const Color(0xFF121212),
+                image: DecorationImage(
+                  image: const NetworkImage(
+                    'https://www.transparenttextures.com/patterns/dark-matter.png',
+                  ),
+                  repeat: ImageRepeat.repeat,
+                  opacity: 0.05,
+                  onError: (exception, stackTrace) {
+                    // Fallback if pattern fails to load
+                  },
+                ),
+              ),
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                stream: Supabase.instance.client
+                    .from('chat_messages')
+                    .stream(primaryKey: ['id'])
+                    .order('created_at', ascending: true),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error, color: Colors.red, size: 48),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Error loading messages',
+                            style: GoogleFonts.montserrat(color: Colors.white),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.chat_bubble_outline, 
-                          color: Colors.grey, size: 64),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No messages yet',
-                          style: GoogleFonts.montserrat(
-                            color: Colors.grey,
-                            fontSize: 16,
+                          const SizedBox(height: 8),
+                          Text(
+                            '${snapshot.error}',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Be the first to say hello!',
-                          style: GoogleFonts.montserrat(
-                            color: Colors.grey.shade700,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                final messages = snapshot.data!;
-                
-                // Auto-scroll to bottom when new messages arrive
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (_scrollController.hasClients) {
-                    _scrollController.jumpTo(
-                      _scrollController.position.maxScrollExtent,
+                        ],
+                      ),
                     );
                   }
-                });
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final msg = messages[index];
-                    final sender = msg['sender'] ?? 'Unknown';
-                    final message = msg['message'] ?? '';
-                    final isMe = sender == _currentUser;
-
-                    return _buildMessageBubble(
-                      sender: sender,
-                      message: message,
-                      isMe: isMe,
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.chat_bubble_outline, 
+                            color: Colors.grey, size: 64),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No messages yet',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Be the first to say hello!',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey.shade700,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
-                  },
-                );
-              },
+                  }
+
+                  final messages = snapshot.data!;
+                  
+                  // Auto-scroll to bottom when new messages arrive
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (_scrollController.hasClients) {
+                      _scrollController.jumpTo(
+                        _scrollController.position.maxScrollExtent,
+                      );
+                    }
+                  });
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final msg = messages[index];
+                      final sender = msg['sender'] ?? 'Unknown';
+                      final message = msg['message'] ?? '';
+                      final isMe = sender == _currentUser;
+                      final isTeacher = sender.toLowerCase().contains('teacher') || 
+                                       sender.toLowerCase().contains('prof') ||
+                                       sender.toLowerCase().contains('sir') ||
+                                       sender.toLowerCase().contains('madam');
+
+                      return _buildMessageBubble(
+                        sender: sender,
+                        message: message,
+                        isMe: isMe,
+                        isTeacher: isTeacher,
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
 
-          // Input Field
+          // Input Bar - Pinned to bottom (NOT using bottomNavigationBar)
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 10, // Safe Area fix
+              left: 10,
+              right: 10,
+              top: 10,
+            ),
             decoration: BoxDecoration(
               color: Colors.grey.shade900,
-              border: Border(
-                top: BorderSide(color: Colors.grey.shade800),
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
             ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: 'Type a message...',
-                        hintStyle: TextStyle(color: Colors.grey.shade600),
-                        filled: true,
-                        fillColor: Colors.black,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
-                        ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Type a message...',
+                      hintStyle: TextStyle(color: Colors.grey.shade600),
+                      filled: true,
+                      fillColor: Colors.black,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide.none,
                       ),
-                      maxLines: null,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _sendMessage(),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: _sendMessage,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Colors.cyanAccent, Colors.blueAccent],
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.send,
-                        color: Colors.black,
-                        size: 24,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
                       ),
                     ),
+                    maxLines: null,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _sendMessage(),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: _sendMessage,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Colors.cyanAccent, Colors.blueAccent],
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -240,26 +267,31 @@ class _ChatScreenState extends State<ChatScreen> {
     required String sender,
     required String message,
     required bool isMe,
+    required bool isTeacher,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isMe) ...[
+            // Avatar for others
             CircleAvatar(
-              backgroundColor: Colors.grey.shade800,
-              radius: 16,
+              backgroundColor: isTeacher 
+                ? Colors.orange.shade700 
+                : Colors.grey.shade800,
+              radius: 18,
               child: Text(
                 sender[0].toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.cyanAccent,
+                style: TextStyle(
+                  color: isTeacher ? Colors.white : Colors.cyanAccent,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
           ],
           Flexible(
             child: Column(
@@ -270,36 +302,73 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (!isMe)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4, left: 4),
-                    child: Text(
-                      sender,
-                      style: GoogleFonts.montserrat(
-                        fontSize: 12,
-                        color: Colors.grey.shade500,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          sender,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 12,
+                            color: isTeacher ? Colors.orange : Colors.grey.shade400,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (isTeacher) ...[
+                          const SizedBox(width: 4),
+                          const Icon(
+                            Icons.verified,
+                            size: 14,
+                            color: Colors.orange,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 10,
+                    vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: isMe 
-                      ? Colors.blue.shade700 
-                      : Colors.grey.shade800,
+                    // Me: Gradient Cyan/Blue (Right side)
+                    // Teacher: Gold/Orange border (Left side)
+                    // Others: Dark Grey (Left side)
+                    gradient: isMe
+                        ? const LinearGradient(
+                            colors: [Color(0xFF00BCD4), Color(0xFF2196F3)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : null,
+                    color: isMe ? null : const Color(0xFF2A2A2A),
+                    border: isTeacher && !isMe
+                        ? Border.all(
+                            color: Colors.orange,
+                            width: 2,
+                          )
+                        : null,
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(16),
-                      topRight: const Radius.circular(16),
-                      bottomLeft: Radius.circular(isMe ? 16 : 4),
-                      bottomRight: Radius.circular(isMe ? 4 : 16),
+                      topLeft: const Radius.circular(18),
+                      topRight: const Radius.circular(18),
+                      bottomLeft: Radius.circular(isMe ? 18 : 4),
+                      bottomRight: Radius.circular(isMe ? 4 : 18),
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isMe 
+                          ? Colors.cyanAccent.withOpacity(0.3)
+                          : Colors.black.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Text(
                     message,
                     style: GoogleFonts.montserrat(
                       color: Colors.white,
                       fontSize: 14,
+                      height: 1.4,
                     ),
                   ),
                 ),
@@ -307,15 +376,17 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           if (isMe) ...[
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
+            // Avatar for me
             CircleAvatar(
               backgroundColor: Colors.cyanAccent,
-              radius: 16,
+              radius: 18,
               child: Text(
                 sender[0].toUpperCase(),
                 style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ),

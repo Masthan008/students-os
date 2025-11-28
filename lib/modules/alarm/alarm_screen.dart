@@ -45,13 +45,36 @@ class _AlarmScreenState extends State<AlarmScreen> {
               itemCount: alarms.length,
               itemBuilder: (context, index) {
                 final alarm = alarms[index];
+                
+                // Read time format preference from Hive
+                final userPrefs = Hive.box('user_prefs');
+                final use24h = userPrefs.get('use24h', defaultValue: false);
+                
+                // Format time based on preference
+                final timeFormat = use24h ? DateFormat('HH:mm') : DateFormat('h:mm a');
+                final formattedTime = timeFormat.format(alarm.dateTime);
+                
+                // Calculate "Rings in X hours"
+                final now = DateTime.now();
+                final difference = alarm.dateTime.difference(now);
+                final hoursUntil = difference.inHours;
+                final minutesUntil = difference.inMinutes % 60;
+                String ringsIn = '';
+                if (difference.isNegative) {
+                  ringsIn = 'Passed';
+                } else if (hoursUntil > 0) {
+                  ringsIn = 'Rings in ${hoursUntil}h ${minutesUntil}m';
+                } else {
+                  ringsIn = 'Rings in ${minutesUntil}m';
+                }
+                
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: GlassContainer(
                     width: double.infinity,
                     child: ListTile(
                       title: Text(
-                        "${alarm.dateTime.hour.toString().padLeft(2, '0')}:${alarm.dateTime.minute.toString().padLeft(2, '0')}",
+                        formattedTime,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 32,
@@ -62,7 +85,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "ID: ${alarm.id} | ${alarm.loopAudio ? 'Daily' : 'Once'}",
+                            "$ringsIn | ${alarm.loopAudio ? 'Daily' : 'Once'}",
                             style: const TextStyle(color: Colors.white70),
                           ),
                           // Display alarm label/note if exists

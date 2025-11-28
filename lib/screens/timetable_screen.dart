@@ -6,6 +6,7 @@ import 'package:alarm/model/notification_settings.dart';
 import 'package:alarm/model/volume_settings.dart';
 import '../models/class_session.dart';
 import '../widgets/glass_container.dart';
+import '../services/timetable_service.dart';
 import 'package:intl/intl.dart';
 
 class TimetableScreen extends StatefulWidget {
@@ -186,9 +187,17 @@ class _TimetableScreenState extends State<TimetableScreen> {
   }
 
   Widget _buildClassCard(BuildContext context, ClassSession session) {
-    final timeFormat = DateFormat('h:mm a'); // 12-hour format with AM/PM
+    // Read time format preference from Hive
+    final userPrefs = Hive.box('user_prefs');
+    final use24h = userPrefs.get('use24h', defaultValue: false);
+    
+    // Format time based on preference
+    final timeFormat = use24h ? DateFormat('HH:mm') : DateFormat('h:mm a');
     final startTime = timeFormat.format(session.startTime);
     final endTime = timeFormat.format(session.endTime);
+    
+    // Get full subject name from TimetableService
+    final fullName = TimetableService.subjectNames[session.subjectName] ?? session.subjectName;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
@@ -199,7 +208,7 @@ class _TimetableScreenState extends State<TimetableScreen> {
           children: [
             Container(
               width: 4,
-              height: 50,
+              height: 60,
               decoration: BoxDecoration(
                 color: _getSubjectColor(session.subjectName),
                 borderRadius: BorderRadius.circular(2),
@@ -217,6 +226,16 @@ class _TimetableScreenState extends State<TimetableScreen> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    fullName,
+                    style: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 13,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(

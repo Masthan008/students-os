@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; // Critical Import
 import 'package:provider/provider.dart';
@@ -29,7 +30,17 @@ void main() async {
   // 1. Ensure Bindings FIRST
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Wrap EVERYTHING in a safety block
+  // 2. Fix White Bar UI Bug - Set System UI Overlay
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black, // Fixes white bar
+      systemNavigationBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+
+  // 3. Wrap EVERYTHING in a safety block
   try {
     // --- Hive Init ---
     await Hive.initFlutter();
@@ -91,13 +102,13 @@ void main() async {
     }
 
   } catch (e, stackTrace) {
-    // 3. THE SAFETY NET
+    // 4. THE SAFETY NET
     // If anything above fails, print it, but DO NOT STOP the app.
     print("❌ CRITICAL ERROR during init: $e");
     print("Stack trace: $stackTrace");
   }
 
-  // 4. Launch App (This runs even if Init failed)
+  // 5. Launch App (This runs even if Init failed)
   runApp(
     MultiProvider(
       providers: [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../providers/focus_provider.dart';
+import 'forest_history_screen.dart';
 
 class FocusForestScreen extends StatefulWidget {
   const FocusForestScreen({super.key});
@@ -11,6 +12,8 @@ class FocusForestScreen extends StatefulWidget {
 }
 
 class _FocusForestScreenState extends State<FocusForestScreen> {
+  int _selectedDuration = 25; // Default 25 minutes
+
   @override
   void initState() {
     super.initState();
@@ -97,6 +100,20 @@ class _FocusForestScreenState extends State<FocusForestScreen> {
             title: const Text('Focus Forest'),
             backgroundColor: Colors.green.shade900,
             actions: [
+              // My Forest Button
+              IconButton(
+                icon: const Icon(Icons.history, color: Colors.greenAccent),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ForestHistoryScreen(),
+                    ),
+                  );
+                },
+                tooltip: 'My Forest',
+              ),
+              // Tree Count
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -132,6 +149,83 @@ class _FocusForestScreenState extends State<FocusForestScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Settings (only show when not focusing)
+                    if (!focusProvider.isFocusing) ...[
+                      // Duration Selector
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.timer, color: Colors.greenAccent, size: 20),
+                            const SizedBox(width: 12),
+                            const Text('Duration:', style: TextStyle(color: Colors.white70)),
+                            const SizedBox(width: 12),
+                            DropdownButton<int>(
+                              value: _selectedDuration,
+                              dropdownColor: Colors.grey.shade900,
+                              underline: const SizedBox(),
+                              style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                              items: [15, 25, 30, 45, 60]
+                                  .map((min) => DropdownMenuItem(
+                                        value: min,
+                                        child: Text('$min min'),
+                                      ))
+                                  .toList(),
+                              onChanged: (val) {
+                                setState(() {
+                                  _selectedDuration = val!;
+                                  focusProvider.setSessionDuration(val);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Ambient Sound Selector
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        margin: const EdgeInsets.symmetric(horizontal: 40),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.greenAccent.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.music_note, color: Colors.greenAccent, size: 20),
+                            const SizedBox(width: 12),
+                            const Text('Sound:', style: TextStyle(color: Colors.white70)),
+                            const SizedBox(width: 12),
+                            DropdownButton<String>(
+                              value: focusProvider.ambientSound,
+                              dropdownColor: Colors.grey.shade900,
+                              underline: const SizedBox(),
+                              style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold),
+                              items: ['Silence', 'Rain', 'Fire', 'Night', 'Library']
+                                  .map((sound) => DropdownMenuItem(
+                                        value: sound,
+                                        child: Text(sound),
+                                      ))
+                                  .toList(),
+                              onChanged: (val) {
+                                focusProvider.setAmbientSound(val!);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                    
                     // Tree Icon
                     Container(
                       width: 200,

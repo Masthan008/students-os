@@ -27,10 +27,29 @@ class _AlarmScreenState extends State<AlarmScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked, // Fix UI Overlap
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 100.0), // Raise above nav bar
-        child: FloatingActionButton(
-          backgroundColor: Colors.deepPurpleAccent,
-          child: const Icon(Icons.add),
-          onPressed: () => _showAddAlarmDialog(context),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Power Nap Button
+            FloatingActionButton.extended(
+              heroTag: 'power_nap',
+              backgroundColor: Colors.amber,
+              onPressed: () => _setPowerNap(context, provider),
+              icon: const Icon(Icons.bolt, color: Colors.black),
+              label: const Text(
+                'Power Nap',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Add Alarm Button
+            FloatingActionButton(
+              heroTag: 'add_alarm',
+              backgroundColor: Colors.deepPurpleAccent,
+              child: const Icon(Icons.add),
+              onPressed: () => _showAddAlarmDialog(context),
+            ),
+          ],
         ),
       ),
       body: Column(
@@ -154,6 +173,41 @@ class _AlarmScreenState extends State<AlarmScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _setPowerNap(BuildContext context, AlarmProvider provider) {
+    final napTime = DateTime.now().add(const Duration(minutes: 20));
+    final timeFormat = DateFormat('h:mm a');
+    
+    // Generate unique ID to avoid conflicts
+    final uniqueId = DateTime.now().millisecondsSinceEpoch % 100000;
+    
+    provider.scheduleAlarmWithNote(
+      napTime,
+      'assets/sounds/alarm_1.mp3',
+      'Quick 20-minute power nap',
+      loopAudio: false,
+      alarmId: uniqueId,
+    );
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.bolt, color: Colors.amber),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '⚡ Power Nap alarm set for ${timeFormat.format(napTime)}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green.shade700,
+        duration: const Duration(seconds: 3),
       ),
     );
   }

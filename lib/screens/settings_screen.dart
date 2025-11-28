@@ -26,11 +26,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadSettings() async {
-    _settingsBox = await Hive.openBox('app_settings');
+    _settingsBox = await Hive.openBox('user_prefs');
     
     setState(() {
-      _powerSaverMode = _settingsBox.get('power_saver_mode', defaultValue: false);
-      _biometricLock = _settingsBox.get('biometric_lock', defaultValue: true);
+      _powerSaverMode = _settingsBox.get('power_saver', defaultValue: false);
+      _biometricLock = _settingsBox.get('biometric_enabled', defaultValue: true);
     });
     
     // Check battery optimization status
@@ -41,7 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _togglePowerSaver(bool value) async {
-    await _settingsBox.put('power_saver_mode', value);
+    await _settingsBox.put('power_saver', value);
     setState(() => _powerSaverMode = value);
     
     ScaffoldMessenger.of(context).showSnackBar(
@@ -57,8 +57,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _toggleBiometric(bool value) async {
-    await _settingsBox.put('biometric_lock', value);
+    await _settingsBox.put('biometric_enabled', value);
     setState(() => _biometricLock = value);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.cyanAccent,
+        content: Text(
+          value ? 'Biometric Lock enabled' : 'Biometric Lock disabled',
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   Future<void> _requestBatteryOptimization() async {
@@ -322,6 +333,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.fingerprint,
                   color: _biometricLock ? Colors.cyanAccent : Colors.grey,
                 ),
+              ),
+            ),
+            
+            const SizedBox(height: 12),
+            
+            // System Settings Button
+            Card(
+              color: Colors.grey.shade900,
+              child: ListTile(
+                leading: const Icon(Icons.settings, color: Colors.cyanAccent),
+                title: const Text(
+                  'System Settings',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                subtitle: const Text(
+                  'Open Android app settings',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+                onTap: () async {
+                  await openAppSettings();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.cyanAccent,
+                      content: Text(
+                        'Opening system settings...',
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
               ),
             ),
             

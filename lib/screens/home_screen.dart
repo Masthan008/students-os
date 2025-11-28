@@ -8,6 +8,8 @@ import '../widgets/glass_bottom_nav.dart';
 import '../modules/calculator/calculator_screen.dart';
 import '../modules/alarm/alarm_screen.dart';
 import '../modules/games/game_2048_screen.dart';
+import '../modules/games/tictactoe_screen.dart';
+import '../modules/games/memory_game_screen.dart';
 import '../modules/focus/focus_forest_screen.dart';
 import '../modules/sleep/sleep_screen.dart';
 import '../modules/cyber/cyber_vault_screen.dart';
@@ -126,21 +128,65 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            ListTile(
+            // Games Section
+            ExpansionTile(
               leading: const Icon(Icons.games, color: Colors.cyanAccent),
               title: const Text(
-                'Play 2048',
+                'Games Arcade',
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
-              onTap: () {
-                Navigator.pop(context); // Close drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Game2048Screen(),
+              iconColor: Colors.cyanAccent,
+              collapsedIconColor: Colors.grey,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.grid_4x4, color: Colors.amber),
+                  title: const Text(
+                    '2048',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
-                );
-              },
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Game2048Screen(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.close, color: Colors.cyanAccent),
+                  title: const Text(
+                    'Tic-Tac-Toe',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TicTacToeScreen(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.psychology, color: Colors.purple),
+                  title: const Text(
+                    'Memory Match',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MemoryGameScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
             ListTile(
               leading: const Icon(Icons.park, color: Colors.green),

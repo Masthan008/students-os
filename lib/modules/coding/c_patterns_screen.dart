@@ -62,7 +62,7 @@ class _CloudPatternList extends StatelessWidget {
       stream: Supabase.instance.client
           .from('code_snippets')
           .stream(primaryKey: ['id'])
-          .order('id', ascending: true),
+          .order('created_at', ascending: true), // Order by timestamp for reliable updates
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

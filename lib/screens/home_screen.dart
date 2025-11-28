@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:io';
 import '../theme/app_theme.dart';
 import '../widgets/glass_bottom_nav.dart';
@@ -268,14 +269,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          // News Bell Icon
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.cyanAccent),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NewsScreen(),
+          // News Bell Icon with Badge
+          StreamBuilder<List<Map<String, dynamic>>>(
+            stream: Supabase.instance.client
+                .from('news')
+                .stream(primaryKey: ['id'])
+                .order('created_at', ascending: false)
+                .limit(10),
+            builder: (context, snapshot) {
+              final unreadCount = snapshot.hasData ? snapshot.data!.length : 0;
+              
+              return Badge(
+                label: Text('$unreadCount'),
+                isLabelVisible: unreadCount > 0,
+                backgroundColor: Colors.red,
+                child: IconButton(
+                  icon: const Icon(Icons.notifications_outlined, color: Colors.cyanAccent),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NewsScreen(),
+                      ),
+                    );
+                  },
                 ),
               );
             },

@@ -14,12 +14,91 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   String _currentUser = 'Student';
+  String _currentRole = 'student';
+  int _onlineCount = 0;
 
   @override
   void initState() {
     super.initState();
     final box = Hive.box('user_prefs');
     _currentUser = box.get('user_name', defaultValue: 'Student');
+    _currentRole = box.get('role', defaultValue: 'student');
+    _trackPresence();
+  }
+
+  void _trackPresence() {
+    // Track online presence using Supabase Realtime
+    try {
+      final channel = Supabase.instance.client.channel('online_users');
+      
+      channel.onPresenceSync((payload) {
+        setState(() {
+          _onlineCount = channel.presenceState().length;
+        });
+      }).subscribe((status, error) async {
+        if (status == RealtimeSubscribeStatus.subscribed) {
+          await channel.track({'user': _currentUser});
+        }
+      });
+    } catch (e) {
+      // Presence tracking failed, continue without it
+      print('Presence tracking error: $e');
+    }
+  }
+
+  Future<void> _deleteMessage(int messageId, String sender) async {
+    // Only allow deletion if it's your message OR you're a teacher
+    final canDelete = sender == _currentUser || _currentRole == 'teacher';
+    
+    if (!canDelete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You can only delete your own messages')),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: const Text('Delete Message?', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'This message will be deleted for everyone.',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await Supabase.instance.client
+            .from('chat_messages')
+            .delete()
+            .eq('id', messageId);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Message deleted')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error deleting message: $e')),
+          );
+        }
+      }
+    }
   }
 
   @override
@@ -68,12 +147,39 @@ class _ChatScreenState extends State<ChatScreen> {
       resizeToAvoidBottomInset: true, // Critical for keyboard
       appBar: AppBar(
         backgroundColor: Colors.grey.shade900,
-        title: Text(
-          'Hub - Chatroom',
-          style: GoogleFonts.orbitron(
-            color: Colors.cyanAccent,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Hub - Chatroom',
+              style: GoogleFonts.orbitron(
+                color: Colors.cyanAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            if (_onlineCount > 0)
+              Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$_onlineCount Online',
+                    style: GoogleFonts.montserrat(
+                      color: Colors.grey.shade400,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
         iconTheme: const IconThemeData(color: Colors.cyanAccent),
       ),
@@ -181,6 +287,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                        sender.toLowerCase().contains('madam');
 
                       return _buildMessageBubble(
+                        messageId: msg['id'],
                         sender: sender,
                         message: message,
                         isMe: isMe,
@@ -264,14 +371,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageBubble({
+    required int messageId,
     required String sender,
     required String message,
     required bool isMe,
     required bool isTeacher,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
+    return GestureDetector(
+      onLongPress: () => _deleteMessage(messageId, sender),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
         mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -392,6 +502,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ],
+      ),
       ),
     );
   }

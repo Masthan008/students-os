@@ -160,9 +160,19 @@ class AboutScreen extends StatelessWidget {
                     Icons.alarm,
                   ),
                   _buildFeature(
-                    '2048 Game',
-                    'Brain Training Puzzle',
+                    'Games Arcade',
+                    '5 Games: 2048, Tic-Tac-Toe, Memory, Snake, Flappy Bird',
                     Icons.games,
+                  ),
+                  _buildFeature(
+                    'Enhanced Calendar',
+                    'Persistent Reminders with Categories',
+                    Icons.calendar_today,
+                  ),
+                  _buildFeature(
+                    'Optimized Performance',
+                    'Faster Load Times & Bug Fixes',
+                    Icons.speed,
                   ),
                 ],
               ),

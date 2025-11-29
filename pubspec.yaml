@@ -20,6 +20,10 @@ dependencies:
   path_provider: ^2.1.2
   permission_handler: ^11.3.0
   supabase_flutter: ^2.5.0
+  
+  # AI Integration
+  google_generative_ai: ^0.4.0
+  flutter_markdown: ^0.7.0
 
   # Camera & AI (Biometrics)
   camera: ^0.10.5

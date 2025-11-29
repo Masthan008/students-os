@@ -177,14 +177,14 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
-  void _setPowerNap(BuildContext context, AlarmProvider provider) {
+  void _setPowerNap(BuildContext context, AlarmProvider provider) async {
     final napTime = DateTime.now().add(const Duration(minutes: 20));
     final timeFormat = DateFormat('h:mm a');
     
-    // Generate unique ID to avoid conflicts
-    final uniqueId = DateTime.now().millisecondsSinceEpoch % 100000;
+    // Generate unique ID to avoid conflicts - use larger range
+    final uniqueId = DateTime.now().millisecondsSinceEpoch % 1000000;
     
-    provider.scheduleAlarmWithNote(
+    await provider.scheduleAlarmWithNote(
       napTime,
       'assets/sounds/alarm_1.mp3',
       'Quick 20-minute power nap',
@@ -192,24 +192,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       alarmId: uniqueId,
     );
     
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.bolt, color: Colors.amber),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                '⚡ Power Nap alarm set for ${timeFormat.format(napTime)}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.green.shade700,
-        duration: const Duration(seconds: 3),
-      ),
-    );
+    // Silent alarm set
   }
 
   void _showEditAlarmDialog(BuildContext context, AlarmSettings alarm) {

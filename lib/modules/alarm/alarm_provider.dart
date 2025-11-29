@@ -18,10 +18,29 @@ class AlarmProvider extends ChangeNotifier {
   }
 
   Future<void> _loadAlarms() async {
-    // In newer versions of alarm package, getAlarms might be async or sync depending on version.
-    // The error said it returns Future<List<AlarmSettings>>.
-    // If the package version installed is indeed returning Future:
-    _alarms = await Alarm.getAlarms(); 
+    // Load all alarms from the alarm package
+    final allAlarms = await Alarm.getAlarms();
+    
+    // Filter out expired alarms (past alarms that are not repeating)
+    final now = DateTime.now();
+    final validAlarms = <AlarmSettings>[];
+    
+    for (final alarm in allAlarms) {
+      // Check if alarm is in the future OR if it's set to loop (repeat daily)
+      if (alarm.dateTime.isAfter(now) || alarm.loopAudio) {
+        validAlarms.add(alarm);
+      } else {
+        // Stop and remove expired non-repeating alarms
+        try {
+          await Alarm.stop(alarm.id);
+          debugPrint('Cleaned up expired alarm: ${alarm.id}');
+        } catch (e) {
+          debugPrint('Error stopping alarm ${alarm.id}: $e');
+        }
+      }
+    }
+    
+    _alarms = validAlarms;
     notifyListeners();
   }
 
@@ -59,8 +78,18 @@ class AlarmProvider extends ChangeNotifier {
   }
 
   Future<void> stopAlarm(int id) async {
-    await AlarmService.stopAlarm(id);
-    await _loadAlarms();
+    try {
+      await AlarmService.stopAlarm(id);
+      // Force remove from local list immediately
+      _alarms.removeWhere((alarm) => alarm.id == id);
+      notifyListeners();
+      // Then reload to ensure sync
+      await _loadAlarms();
+    } catch (e) {
+      debugPrint('Error stopping alarm $id: $e');
+      // Still try to reload
+      await _loadAlarms();
+    }
   }
 
   List<String> _availableSounds = [

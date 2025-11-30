@@ -9,7 +9,7 @@ class CalculatorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 6,
       child: Scaffold(
         backgroundColor: const Color(0xFF2A2A2A),
         appBar: AppBar(
@@ -22,14 +22,18 @@ class CalculatorScreen extends StatelessWidget {
             ),
           ),
           iconTheme: const IconThemeData(color: Colors.cyanAccent),
-          bottom: const TabBar(
+          bottom: TabBar(
+            isScrollable: true,
             indicatorColor: Colors.cyanAccent,
             labelColor: Colors.cyanAccent,
             unselectedLabelColor: Colors.grey,
-            tabs: [
+            tabs: const [
               Tab(icon: Icon(Icons.calculate), text: 'Calc'),
-              Tab(icon: Icon(Icons.swap_horiz), text: 'Converter'),
+              Tab(icon: Icon(Icons.swap_horiz), text: 'Convert'),
               Tab(icon: Icon(Icons.school), text: 'CGPA'),
+              Tab(icon: Icon(Icons.monitor_weight), text: 'BMI'),
+              Tab(icon: Icon(Icons.cake), text: 'Age'),
+              Tab(icon: Icon(Icons.functions), text: 'Equation'),
             ],
           ),
         ),
@@ -38,6 +42,9 @@ class CalculatorScreen extends StatelessWidget {
             _ScientificCalculatorTab(),
             _ConverterTab(),
             _CGPATab(),
+            _BMITab(),
+            _AgeCalculatorTab(),
+            _EquationSolverTab(),
           ],
         ),
       ),
@@ -59,6 +66,7 @@ class _ScientificCalculatorTabState extends State<_ScientificCalculatorTab> {
   String _expression = '';
   String _result = '0';
   bool _isDegrees = true;
+  List<String> _history = [];
 
   void _onButtonPressed(String value) {
     setState(() {
@@ -87,6 +95,10 @@ class _ScientificCalculatorTabState extends State<_ScientificCalculatorTab> {
         _expression += 'ln(';
       } else if (value == '^') {
         _expression += '^';
+      } else if (value == 'π') {
+        _expression += 'π';
+      } else if (value == 'e') {
+        _expression += 'e';
       } else {
         _expression += value;
       }
@@ -115,6 +127,9 @@ class _ScientificCalculatorTabState extends State<_ScientificCalculatorTab> {
       } else {
         _result = eval.toStringAsFixed(8).replaceAll(RegExp(r'0*$'), '').replaceAll(RegExp(r'\.$'), '');
       }
+      
+      _history.insert(0, '$_expression = $_result');
+      if (_history.length > 10) _history.removeLast();
     } catch (e) {
       _result = 'Error';
     }
@@ -223,15 +238,17 @@ class _ScientificCalculatorTabState extends State<_ScientificCalculatorTab> {
               const SizedBox(height: 6),
               _buildRow(['log', 'ln', '√', '^'], isScientific: true),
               const SizedBox(height: 6),
-              _buildRow(['AC', 'DEL', '(', ')'], isFunction: true),
+              _buildRow(['π', 'e', '(', ')'], isScientific: true),
               const SizedBox(height: 6),
-              _buildRow(['7', '8', '9', '÷']),
+              _buildRow(['AC', 'DEL', '%', '÷'], isFunction: true),
               const SizedBox(height: 6),
-              _buildRow(['4', '5', '6', '×']),
+              _buildRow(['7', '8', '9', '×']),
               const SizedBox(height: 6),
-              _buildRow(['1', '2', '3', '-']),
+              _buildRow(['4', '5', '6', '-']),
               const SizedBox(height: 6),
-              _buildRow(['0', '.', '=', '+']),
+              _buildRow(['1', '2', '3', '+']),
+              const SizedBox(height: 6),
+              _buildRow(['0', '.', '=', '=']),
             ],
           ),
         ),
@@ -250,7 +267,7 @@ class _ScientificCalculatorTabState extends State<_ScientificCalculatorTab> {
   }
 
   Widget _buildButton(String label, {bool isScientific = false, bool isFunction = false}) {
-    bool isOperator = ['÷', '×', '-', '+'].contains(label);
+    bool isOperator = ['÷', '×', '-', '+', '%'].contains(label);
     bool isEquals = label == '=';
     bool isSpecialFunction = ['AC', 'DEL'].contains(label);
     
@@ -351,6 +368,18 @@ class _ConverterTabState extends State<_ConverterTab> {
       'Fahrenheit': 1.0,
       'Kelvin': 1.0,
     },
+    'Speed': {
+      'Meter/Second': 1.0,
+      'Kilometer/Hour': 3.6,
+      'Mile/Hour': 2.23694,
+      'Knot': 1.94384,
+    },
+    'Area': {
+      'Square Meter': 1.0,
+      'Square Kilometer': 0.000001,
+      'Square Foot': 10.7639,
+      'Acre': 0.000247105,
+    },
   };
 
   void _convert() {
@@ -370,7 +399,6 @@ class _ConverterTabState extends State<_ConverterTab> {
   }
 
   double _convertTemperature(double value, String from, String to) {
-    // Convert to Celsius first
     double celsius = value;
     if (from == 'Fahrenheit') {
       celsius = (value - 32) * 5 / 9;
@@ -378,7 +406,6 @@ class _ConverterTabState extends State<_ConverterTab> {
       celsius = value - 273.15;
     }
 
-    // Convert from Celsius to target
     if (to == 'Fahrenheit') {
       return celsius * 9 / 5 + 32;
     } else if (to == 'Kelvin') {
@@ -393,7 +420,6 @@ class _ConverterTabState extends State<_ConverterTab> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Category Selector
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             decoration: BoxDecoration(
@@ -407,7 +433,7 @@ class _ConverterTabState extends State<_ConverterTab> {
               dropdownColor: Colors.grey.shade900,
               underline: const SizedBox(),
               style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16),
-              items: ['Length', 'Mass', 'Temperature']
+              items: _conversions.keys
                   .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
                   .toList(),
               onChanged: (val) {
@@ -421,8 +447,6 @@ class _ConverterTabState extends State<_ConverterTab> {
             ),
           ),
           const SizedBox(height: 30),
-
-          // Input Section
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -466,12 +490,9 @@ class _ConverterTabState extends State<_ConverterTab> {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
           const Icon(Icons.arrow_downward, color: Colors.cyanAccent, size: 30),
           const SizedBox(height: 20),
-
-          // Output Section
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -576,7 +597,6 @@ class _CGPATabState extends State<_CGPATab> {
 
     return Column(
       children: [
-        // SGPA Display
         Container(
           margin: const EdgeInsets.all(20),
           padding: const EdgeInsets.all(20),
@@ -605,8 +625,6 @@ class _CGPATabState extends State<_CGPATab> {
             ],
           ),
         ),
-
-        // Subject List
         Expanded(
           child: _subjects.isEmpty
               ? Center(
@@ -644,7 +662,6 @@ class _CGPATabState extends State<_CGPATab> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            // Credits
                             DropdownButton<int>(
                               value: subject['credits'],
                               dropdownColor: Colors.grey.shade800,
@@ -662,7 +679,6 @@ class _CGPATabState extends State<_CGPATab> {
                               },
                             ),
                             const SizedBox(width: 8),
-                            // Grade
                             DropdownButton<String>(
                               value: subject['grade'],
                               dropdownColor: Colors.grey.shade800,
@@ -694,8 +710,6 @@ class _CGPATabState extends State<_CGPATab> {
                   },
                 ),
         ),
-
-        // Add Subject Button
         Padding(
           padding: const EdgeInsets.all(20),
           child: ElevatedButton.icon(
@@ -710,6 +724,676 @@ class _CGPATabState extends State<_CGPATab> {
           ),
         ),
       ],
+    );
+  }
+}
+
+
+// ============================================
+// TAB 4: BMI Calculator
+// ============================================
+class _BMITab extends StatefulWidget {
+  const _BMITab();
+
+  @override
+  State<_BMITab> createState() => _BMITabState();
+}
+
+class _BMITabState extends State<_BMITab> {
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  double _bmi = 0;
+  String _category = '';
+  String _unit = 'Metric';
+
+  void _calculateBMI() {
+    final height = double.tryParse(_heightController.text) ?? 0;
+    final weight = double.tryParse(_weightController.text) ?? 0;
+
+    if (height > 0 && weight > 0) {
+      double bmi;
+      if (_unit == 'Metric') {
+        bmi = weight / ((height / 100) * (height / 100));
+      } else {
+        bmi = (weight / (height * height)) * 703;
+      }
+
+      setState(() {
+        _bmi = bmi;
+        if (bmi < 18.5) {
+          _category = 'Underweight';
+        } else if (bmi < 25) {
+          _category = 'Normal';
+        } else if (bmi < 30) {
+          _category = 'Overweight';
+        } else {
+          _category = 'Obese';
+        }
+      });
+    }
+  }
+
+  Color _getCategoryColor() {
+    switch (_category) {
+      case 'Underweight':
+        return Colors.blue;
+      case 'Normal':
+        return Colors.green;
+      case 'Overweight':
+        return Colors.orange;
+      case 'Obese':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'Metric', label: Text('Metric (kg/cm)')),
+              ButtonSegment(value: 'Imperial', label: Text('Imperial (lb/in)')),
+            ],
+            selected: {_unit},
+            onSelectionChanged: (Set<String> newSelection) {
+              setState(() {
+                _unit = newSelection.first;
+                _heightController.clear();
+                _weightController.clear();
+                _bmi = 0;
+                _category = '';
+              });
+            },
+          ),
+          const SizedBox(height: 30),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _heightController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: InputDecoration(
+                    labelText: _unit == 'Metric' ? 'Height (cm)' : 'Height (inches)',
+                    labelStyle: const TextStyle(color: Colors.cyanAccent),
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade700),
+                    ),
+                  ),
+                  onChanged: (_) => _calculateBMI(),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _weightController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: InputDecoration(
+                    labelText: _unit == 'Metric' ? 'Weight (kg)' : 'Weight (lbs)',
+                    labelStyle: const TextStyle(color: Colors.cyanAccent),
+                    border: const OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade700),
+                    ),
+                  ),
+                  onChanged: (_) => _calculateBMI(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          if (_bmi > 0)
+            Container(
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [_getCategoryColor().withOpacity(0.3), _getCategoryColor().withOpacity(0.1)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _getCategoryColor(), width: 2),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Your BMI',
+                    style: GoogleFonts.orbitron(color: Colors.white70, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _bmi.toStringAsFixed(1),
+                    style: GoogleFonts.orbitron(
+                      color: _getCategoryColor(),
+                      fontSize: 56,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: _getCategoryColor(),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      _category,
+                      style: GoogleFonts.montserrat(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 30),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'BMI Categories:',
+                  style: GoogleFonts.montserrat(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildBMICategory('Underweight', '< 18.5', Colors.blue),
+                _buildBMICategory('Normal', '18.5 - 24.9', Colors.green),
+                _buildBMICategory('Overweight', '25 - 29.9', Colors.orange),
+                _buildBMICategory('Obese', '≥ 30', Colors.red),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBMICategory(String label, String range, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '$label: ',
+            style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+          Text(
+            range,
+            style: GoogleFonts.montserrat(color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================
+// TAB 5: Age Calculator
+// ============================================
+class _AgeCalculatorTab extends StatefulWidget {
+  const _AgeCalculatorTab();
+
+  @override
+  State<_AgeCalculatorTab> createState() => _AgeCalculatorTabState();
+}
+
+class _AgeCalculatorTabState extends State<_AgeCalculatorTab> {
+  DateTime? _birthDate;
+  DateTime _currentDate = DateTime.now();
+  Map<String, int> _age = {};
+
+  void _selectBirthDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Colors.cyanAccent,
+              onPrimary: Colors.black,
+              surface: Color(0xFF2A2A2A),
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _birthDate = picked;
+        _calculateAge();
+      });
+    }
+  }
+
+  void _calculateAge() {
+    if (_birthDate == null) return;
+
+    int years = _currentDate.year - _birthDate!.year;
+    int months = _currentDate.month - _birthDate!.month;
+    int days = _currentDate.day - _birthDate!.day;
+
+    if (days < 0) {
+      months--;
+      days += DateTime(_currentDate.year, _currentDate.month, 0).day;
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    final totalDays = _currentDate.difference(_birthDate!).inDays;
+    final totalWeeks = (totalDays / 7).floor();
+    final totalMonths = years * 12 + months;
+
+    setState(() {
+      _age = {
+        'years': years,
+        'months': months,
+        'days': days,
+        'totalDays': totalDays,
+        'totalWeeks': totalWeeks,
+        'totalMonths': totalMonths,
+      };
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Birth Date',
+                  style: GoogleFonts.montserrat(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _birthDate == null
+                      ? 'Not Selected'
+                      : '${_birthDate!.day}/${_birthDate!.month}/${_birthDate!.year}',
+                  style: GoogleFonts.orbitron(
+                    color: Colors.cyanAccent,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: _selectBirthDate,
+                  icon: const Icon(Icons.calendar_today),
+                  label: const Text('Select Birth Date'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.cyanAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_age.isNotEmpty) ...[
+            const SizedBox(height: 30),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.cyanAccent.withOpacity(0.3), Colors.blueAccent.withOpacity(0.3)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.cyanAccent),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Your Age',
+                    style: GoogleFonts.orbitron(color: Colors.white70, fontSize: 16),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildAgeBox('${_age['years']}', 'Years'),
+                      _buildAgeBox('${_age['months']}', 'Months'),
+                      _buildAgeBox('${_age['days']}', 'Days'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  _buildDetailRow('Total Months', '${_age['totalMonths']}'),
+                  const Divider(color: Colors.grey),
+                  _buildDetailRow('Total Weeks', '${_age['totalWeeks']}'),
+                  const Divider(color: Colors.grey),
+                  _buildDetailRow('Total Days', '${_age['totalDays']}'),
+                  const Divider(color: Colors.grey),
+                  _buildDetailRow('Total Hours', '${_age['totalDays']! * 24}'),
+                  const Divider(color: Colors.grey),
+                  _buildDetailRow('Total Minutes', '${_age['totalDays']! * 24 * 60}'),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAgeBox(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: GoogleFonts.orbitron(
+            color: Colors.cyanAccent,
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 16),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.orbitron(
+              color: Colors.cyanAccent,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================
+// TAB 6: Equation Solver (Quadratic)
+// ============================================
+class _EquationSolverTab extends StatefulWidget {
+  const _EquationSolverTab();
+
+  @override
+  State<_EquationSolverTab> createState() => _EquationSolverTabState();
+}
+
+class _EquationSolverTabState extends State<_EquationSolverTab> {
+  final TextEditingController _aController = TextEditingController();
+  final TextEditingController _bController = TextEditingController();
+  final TextEditingController _cController = TextEditingController();
+  
+  String _solution = '';
+  String _steps = '';
+
+  void _solveEquation() {
+    final a = double.tryParse(_aController.text) ?? 0;
+    final b = double.tryParse(_bController.text) ?? 0;
+    final c = double.tryParse(_cController.text) ?? 0;
+
+    if (a == 0) {
+      setState(() {
+        _solution = 'Error: a cannot be 0';
+        _steps = '';
+      });
+      return;
+    }
+
+    final discriminant = b * b - 4 * a * c;
+    
+    String solution;
+    String steps = 'Equation: ${a}x² + ${b}x + $c = 0\n\n';
+    steps += 'Discriminant (Δ) = b² - 4ac\n';
+    steps += 'Δ = (${b})² - 4(${a})(${c})\n';
+    steps += 'Δ = ${discriminant.toStringAsFixed(2)}\n\n';
+
+    if (discriminant > 0) {
+      final x1 = (-b + math.sqrt(discriminant)) / (2 * a);
+      final x2 = (-b - math.sqrt(discriminant)) / (2 * a);
+      solution = 'Two Real Solutions:\nx₁ = ${x1.toStringAsFixed(4)}\nx₂ = ${x2.toStringAsFixed(4)}';
+      steps += 'Since Δ > 0, two real solutions exist.\n\n';
+      steps += 'x = (-b ± √Δ) / 2a\n';
+      steps += 'x₁ = (${-b} + ${math.sqrt(discriminant).toStringAsFixed(2)}) / ${2 * a}\n';
+      steps += 'x₂ = (${-b} - ${math.sqrt(discriminant).toStringAsFixed(2)}) / ${2 * a}';
+    } else if (discriminant == 0) {
+      final x = -b / (2 * a);
+      solution = 'One Real Solution:\nx = ${x.toStringAsFixed(4)}';
+      steps += 'Since Δ = 0, one real solution exists.\n\n';
+      steps += 'x = -b / 2a\n';
+      steps += 'x = ${-b} / ${2 * a}';
+    } else {
+      final realPart = -b / (2 * a);
+      final imagPart = math.sqrt(-discriminant) / (2 * a);
+      solution = 'Two Complex Solutions:\nx₁ = ${realPart.toStringAsFixed(4)} + ${imagPart.toStringAsFixed(4)}i\nx₂ = ${realPart.toStringAsFixed(4)} - ${imagPart.toStringAsFixed(4)}i';
+      steps += 'Since Δ < 0, two complex solutions exist.\n\n';
+      steps += 'x = (-b ± i√|Δ|) / 2a';
+    }
+
+    setState(() {
+      _solution = solution;
+      _steps = steps;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quadratic Equation Solver',
+            style: GoogleFonts.orbitron(
+              color: Colors.cyanAccent,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'ax² + bx + c = 0',
+            style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 18),
+          ),
+          const SizedBox(height: 30),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _aController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                        decoration: const InputDecoration(
+                          labelText: 'a',
+                          labelStyle: TextStyle(color: Colors.cyanAccent, fontSize: 24),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _bController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                        decoration: const InputDecoration(
+                          labelText: 'b',
+                          labelStyle: TextStyle(color: Colors.cyanAccent, fontSize: 24),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _cController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                        style: const TextStyle(color: Colors.white, fontSize: 20),
+                        decoration: const InputDecoration(
+                          labelText: 'c',
+                          labelStyle: TextStyle(color: Colors.cyanAccent, fontSize: 24),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: _solveEquation,
+                  icon: const Icon(Icons.calculate),
+                  label: const Text('Solve'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.cyanAccent,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_solution.isNotEmpty) ...[
+            const SizedBox(height: 30),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green.withOpacity(0.3), Colors.teal.withOpacity(0.3)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.green),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Solution:',
+                    style: GoogleFonts.orbitron(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _solution,
+                    style: GoogleFonts.orbitron(
+                      color: Colors.greenAccent,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Steps:',
+                    style: GoogleFonts.orbitron(
+                      color: Colors.cyanAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _steps,
+                    style: GoogleFonts.robotoMono(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

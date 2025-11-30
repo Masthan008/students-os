@@ -11,7 +11,6 @@ import '../modules/games/game_2048_screen.dart';
 import '../modules/games/tictactoe_screen.dart';
 import '../modules/games/memory_game_screen.dart';
 import '../modules/games/snake_game_screen.dart';
-import '../modules/games/flappy_bird_screen.dart';
 import '../modules/focus/focus_forest_screen.dart';
 import '../modules/sleep/sleep_screen.dart';
 import '../modules/cyber/cyber_vault_screen.dart';
@@ -19,6 +18,7 @@ import '../modules/coding/coding_lab_screen.dart';
 import '../modules/coding/compiler_screen.dart';
 import '../modules/news/news_screen.dart';
 import '../modules/academic/syllabus_screen.dart';
+import '../modules/academic/books_notes_screen.dart';
 import 'timetable_screen.dart';
 import 'calendar_screen.dart';
 import 'attendance_screen.dart';
@@ -204,22 +204,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.flight, color: Colors.blue),
-                  title: const Text(
-                    'Flappy Bird',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FlappyBirdScreen(),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
             ListTile(
@@ -298,6 +282,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const SyllabusScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.library_books, color: Colors.purple),
+              title: const Text(
+                'Books & Notes',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BooksNotesScreen(),
                   ),
                 );
               },

@@ -62,6 +62,7 @@ void main() async {
     await Hive.openBox<ClassSession>('class_sessions');
     await Hive.openBox('user_prefs');
     await Hive.openBox('attendance_records');
+    await Hive.openBox('books_notes');
     
     print("✅ Hive Initialized Successfully");
 

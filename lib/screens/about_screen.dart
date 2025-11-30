@@ -130,6 +130,11 @@ class AboutScreen extends StatelessWidget {
                     Icons.code,
                   ),
                   _buildFeature(
+                    'Books & Notes',
+                    'Organize Study Materials & Quick Notes',
+                    Icons.library_books,
+                  ),
+                  _buildFeature(
                     'Cyber Vault',
                     'Ethical Hacking Resource Library',
                     Icons.security,
@@ -161,7 +166,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                   _buildFeature(
                     'Games Arcade',
-                    '5 Games: 2048, Tic-Tac-Toe, Memory, Snake, Flappy Bird',
+                    '4 Games: 2048, Tic-Tac-Toe, Memory Match, Snake',
                     Icons.games,
                   ),
                   _buildFeature(

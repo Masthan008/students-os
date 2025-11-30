@@ -11,6 +11,8 @@ import '../modules/games/game_2048_screen.dart';
 import '../modules/games/tictactoe_screen.dart';
 import '../modules/games/memory_game_screen.dart';
 import '../modules/games/snake_game_screen.dart';
+import '../modules/games/puzzle_slider_screen.dart';
+import '../modules/games/simon_says_screen.dart';
 import '../modules/focus/focus_forest_screen.dart';
 import '../modules/sleep/sleep_screen.dart';
 import '../modules/cyber/cyber_vault_screen.dart';
@@ -200,6 +202,38 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const SnakeGameScreen(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.grid_4x4, color: Colors.orange),
+                  title: const Text(
+                    'Puzzle Slider',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PuzzleSliderScreen(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.psychology_alt, color: Colors.pink),
+                  title: const Text(
+                    'Simon Says',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SimonSaysScreen(),
                       ),
                     );
                   },

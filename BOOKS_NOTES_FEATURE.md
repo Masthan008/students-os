@@ -11,16 +11,26 @@ A comprehensive study materials management system that allows students to organi
 **Add Books:**
 - Book title
 - Author name
-- PDF link (optional)
+- Online link (optional) - Any web URL
+- **File attachment (optional)** - Upload local files
 - Subject categorization
-- One-tap access to PDF links
+- One-tap access to files and links
+
+**Supported File Types:**
+- 📄 PDF
+- 📝 DOC, DOCX
+- 📋 TXT
+- 📊 PPT, PPTX
+- 🖼️ JPG, JPEG, PNG
 
 **Book Management:**
 - View all books in card layout
 - Search by title, author, or subject
-- Open PDF links directly
+- **Open attached files directly** (NEW)
+- Open online links in browser
 - Delete books
 - Subject badges with color coding
+- File type indicators with icons
 
 **Subjects Available:**
 - General
@@ -91,7 +101,9 @@ A comprehensive study materials management system that allows students to organi
   'id': timestamp,
   'title': 'Book Title',
   'author': 'Author Name',
-  'link': 'https://example.com/book.pdf',
+  'link': 'https://example.com/book.pdf', // Optional online link
+  'filePath': '/storage/emulated/0/Download/book.pdf', // Optional local file
+  'fileName': 'book.pdf', // File name with extension
   'subject': 'Mathematics',
   'createdAt': '2024-01-01T00:00:00.000Z'
 }
@@ -111,11 +123,13 @@ A comprehensive study materials management system that allows students to organi
 ## User Actions
 
 ### Books:
-1. **Add Book** - Tap FAB → Fill form → Add
-2. **Open PDF** - Tap book card (if link exists)
-3. **View Options** - Tap ⋮ menu → Open Link / Delete
-4. **Search** - Type in search bar
-5. **Delete** - Menu → Delete → Confirm
+1. **Add Book** - Tap FAB → Fill form → Optionally attach file or add link → Add
+2. **Attach File** - Tap "Choose File" → Select from device
+3. **Open File** - Tap file card or Menu → Open File
+4. **Open Link** - Menu → Open Link (if link exists)
+5. **View Options** - Tap ⋮ menu → Open File / Open Link / Delete
+6. **Search** - Type in search bar
+7. **Delete** - Menu → Delete → Confirm
 
 ### Notes:
 1. **Add Note** - Tap FAB → Fill form → Add
@@ -156,7 +170,9 @@ lib/
 - `flutter/material.dart` - UI framework
 - `google_fonts` - Typography
 - `hive_flutter` - Local storage
-- `url_launcher` - Open PDF links
+- `url_launcher` - Open online links
+- `file_picker` - Pick files from device (NEW)
+- `open_file` - Open files with default apps (NEW)
 
 ## Empty States
 
@@ -214,8 +230,12 @@ Actions:
 
 ### Books Tab:
 - [ ] Add book with all fields
-- [ ] Add book without PDF link
-- [ ] Open PDF link
+- [ ] Add book with file attachment
+- [ ] Add book with online link
+- [ ] Add book with both file and link
+- [ ] Open attached file (PDF, DOC, etc.)
+- [ ] Open online link
+- [ ] View file type indicators
 - [ ] Search books
 - [ ] Delete book
 - [ ] View empty state
@@ -267,13 +287,17 @@ Actions:
 
 ## Summary
 
-✅ **Books Tab** - Store and organize textbooks with PDF links
+✅ **Books Tab** - Store and organize textbooks with file attachments or online links
+✅ **File Support** - PDF, DOC, DOCX, TXT, PPT, PPTX, JPG, PNG
+✅ **File Management** - Upload, view, and open files with default apps
 ✅ **Notes Tab** - Quick notes with subject categorization
 ✅ **Search** - Real-time search across all content
 ✅ **Local Storage** - Hive-based persistent storage
 ✅ **Clean UI** - Dark theme with intuitive navigation
+✅ **File Indicators** - Color-coded icons for different file types
 ✅ **Integrated** - Added to home drawer and about screen
 
-**Status:** Ready to use! 🎉
+**Status:** Enhanced with file upload! 🎉
 **Build:** No errors, ready to compile
 **Storage:** Local (Hive) - No database setup required
+**New Features:** File picker, file viewer, multi-format support

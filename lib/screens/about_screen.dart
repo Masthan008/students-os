@@ -166,7 +166,7 @@ class AboutScreen extends StatelessWidget {
                   ),
                   _buildFeature(
                     'Games Arcade',
-                    '4 Games: 2048, Tic-Tac-Toe, Memory Match, Snake',
+                    '6 Games with 20-min Time Limit: 2048, Tic-Tac-Toe, Memory, Snake, Puzzle, Simon',
                     Icons.games,
                   ),
                   _buildFeature(

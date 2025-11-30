@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'dart:io';
 
 class BooksNotesScreen extends StatefulWidget {
   const BooksNotesScreen({super.key});
@@ -123,63 +126,160 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
     final authorController = TextEditingController();
     final linkController = TextEditingController();
     String selectedSubject = 'General';
+    String? selectedFilePath;
+    String? selectedFileName;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey.shade900,
-        title: Text('Add Book', style: GoogleFonts.orbitron(color: Colors.cyanAccent)),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Book Title',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade700),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyanAccent),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: authorController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Author',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade700),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyanAccent),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: Colors.grey.shade900,
+          title: Text('Add Book', style: GoogleFonts.orbitron(color: Colors.cyanAccent)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Book Title',
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade700),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.cyanAccent),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: linkController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'PDF Link (Optional)',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade700),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.cyanAccent),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: authorController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Author',
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade700),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.cyanAccent),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              StatefulBuilder(
-                builder: (context, setDialogState) => DropdownButtonFormField<String>(
+                const SizedBox(height: 12),
+                TextField(
+                  controller: linkController,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Online Link (Optional)',
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey.shade700),
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.cyanAccent),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // File picker button
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade700),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.attach_file, color: Colors.grey, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Attach File (Optional)',
+                            style: GoogleFonts.montserrat(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      if (selectedFileName != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  selectedFileName!,
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.green,
+                                    fontSize: 11,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.red, size: 16),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  setDialogState(() {
+                                    selectedFilePath = null;
+                                    selectedFileName = null;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          final result = await FilePicker.platform.pickFiles(
+                            type: FileType.custom,
+                            allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'ppt', 'pptx', 'jpg', 'jpeg', 'png'],
+                          );
+                          
+                          if (result != null && result.files.single.path != null) {
+                            setDialogState(() {
+                              selectedFilePath = result.files.single.path;
+                              selectedFileName = result.files.single.name;
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.upload_file, size: 16),
+                        label: const Text('Choose File'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.cyanAccent,
+                          foregroundColor: Colors.black,
+                          minimumSize: const Size(double.infinity, 36),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Supported: PDF, DOC, DOCX, TXT, PPT, PPTX, JPG, PNG',
+                        style: GoogleFonts.montserrat(
+                          color: Colors.grey.shade600,
+                          fontSize: 9,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
                   value: selectedSubject,
                   dropdownColor: Colors.grey.shade800,
                   style: const TextStyle(color: Colors.white),
@@ -202,39 +302,44 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
                     });
                   },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () {
+                if (titleController.text.isNotEmpty) {
+                  final box = Hive.box('books_notes');
+                  final books = List<Map<String, dynamic>>.from(box.get('books', defaultValue: []));
+                  books.add({
+                    'id': DateTime.now().millisecondsSinceEpoch,
+                    'title': titleController.text,
+                    'author': authorController.text,
+                    'link': linkController.text,
+                    'filePath': selectedFilePath,
+                    'fileName': selectedFileName,
+                    'subject': selectedSubject,
+                    'createdAt': DateTime.now().toIso8601String(),
+                  });
+                  box.put('books', books);
+                  Navigator.pop(context);
+                  setState(() {});
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Book added successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Add', style: TextStyle(color: Colors.cyanAccent)),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () {
-              if (titleController.text.isNotEmpty) {
-                final box = Hive.box('books_notes');
-                final books = List<Map<String, dynamic>>.from(box.get('books', defaultValue: []));
-                books.add({
-                  'id': DateTime.now().millisecondsSinceEpoch,
-                  'title': titleController.text,
-                  'author': authorController.text,
-                  'link': linkController.text,
-                  'subject': selectedSubject,
-                  'createdAt': DateTime.now().toIso8601String(),
-                });
-                box.put('books', books);
-                Navigator.pop(context);
-                setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Book added successfully')),
-                );
-              }
-            },
-            child: const Text('Add', style: TextStyle(color: Colors.cyanAccent)),
-          ),
-        ],
       ),
     );
   }
@@ -333,7 +438,10 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
                 Navigator.pop(context);
                 setState(() {});
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Note added successfully')),
+                  const SnackBar(
+                    content: Text('Note added successfully'),
+                    backgroundColor: Colors.green,
+                  ),
                 );
               }
             },
@@ -411,137 +519,282 @@ class _BooksTabState extends State<_BooksTab> {
 
   Widget _buildBookCard(Map<String, dynamic> book) {
     final hasLink = book['link'] != null && book['link'].toString().isNotEmpty;
+    final hasFile = book['filePath'] != null && book['filePath'].toString().isNotEmpty;
+    final fileName = book['fileName']?.toString() ?? '';
+    final fileExtension = fileName.isNotEmpty ? fileName.split('.').last.toUpperCase() : '';
 
     return Card(
       color: Colors.grey.shade900,
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: hasLink ? () => _openLink(book['link']) : null,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.cyanAccent.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.book, color: Colors.cyanAccent, size: 28),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.cyanAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                  child: const Icon(Icons.book, color: Colors.cyanAccent, size: 28),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        book['title'],
+                        style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (book['author'].toString().isNotEmpty)
                         Text(
-                          book['title'],
+                          'by ${book['author']}',
                           style: GoogleFonts.montserrat(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                            fontSize: 12,
                           ),
                         ),
-                        if (book['author'].toString().isNotEmpty)
-                          Text(
-                            'by ${book['author']}',
-                            style: GoogleFonts.montserrat(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                          ),
-                      ],
-                    ),
+                    ],
                   ),
-                  PopupMenuButton(
-                    color: Colors.grey.shade800,
-                    icon: const Icon(Icons.more_vert, color: Colors.grey),
-                    itemBuilder: (context) => [
-                      if (hasLink)
-                        const PopupMenuItem(
-                          value: 'open',
-                          child: Row(
-                            children: [
-                              Icon(Icons.open_in_new, color: Colors.cyanAccent, size: 20),
-                              SizedBox(width: 8),
-                              Text('Open Link', style: TextStyle(color: Colors.white)),
-                            ],
-                          ),
-                        ),
+                ),
+                PopupMenuButton(
+                  color: Colors.grey.shade800,
+                  icon: const Icon(Icons.more_vert, color: Colors.grey),
+                  itemBuilder: (context) => [
+                    if (hasFile)
                       const PopupMenuItem(
-                        value: 'delete',
+                        value: 'openFile',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.red, size: 20),
+                            Icon(Icons.folder_open, color: Colors.cyanAccent, size: 20),
                             SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.white)),
+                            Text('Open File', style: TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
-                    ],
-                    onSelected: (value) {
-                      if (value == 'open') {
-                        _openLink(book['link']);
-                      } else if (value == 'delete') {
-                        _deleteBook(book['id']);
-                      }
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Colors.orange.withOpacity(0.5)),
-                    ),
-                    child: Text(
-                      book['subject'],
-                      style: GoogleFonts.montserrat(
-                        color: Colors.orange,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+                    if (hasLink)
+                      const PopupMenuItem(
+                        value: 'openLink',
+                        child: Row(
+                          children: [
+                            Icon(Icons.open_in_new, color: Colors.blue, size: 20),
+                            SizedBox(width: 8),
+                            Text('Open Link', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  const Spacer(),
-                  if (hasLink)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+                    const PopupMenuItem(
+                      value: 'delete',
                       child: Row(
                         children: [
-                          const Icon(Icons.link, color: Colors.green, size: 12),
-                          const SizedBox(width: 4),
-                          Text(
-                            'PDF Available',
-                            style: GoogleFonts.montserrat(
-                              color: Colors.green,
-                              fontSize: 10,
-                            ),
-                          ),
+                          Icon(Icons.delete, color: Colors.red, size: 20),
+                          SizedBox(width: 8),
+                          Text('Delete', style: TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
-                ],
+                  ],
+                  onSelected: (value) {
+                    if (value == 'openFile') {
+                      _openFile(book['filePath']);
+                    } else if (value == 'openLink') {
+                      _openLink(book['link']);
+                    } else if (value == 'delete') {
+                      _deleteBook(book['id']);
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // File attachment display
+            if (hasFile)
+              InkWell(
+                onTap: () => _openFile(book['filePath']),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _getFileColor(fileExtension).withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Icon(
+                          _getFileIcon(fileExtension),
+                          color: _getFileColor(fileExtension),
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              fileName,
+                              style: GoogleFonts.montserrat(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              fileExtension,
+                              style: GoogleFonts.montserrat(
+                                color: _getFileColor(fileExtension),
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.orange.withOpacity(0.5)),
+                  ),
+                  child: Text(
+                    book['subject'],
+                    style: GoogleFonts.montserrat(
+                      color: Colors.orange,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (hasLink)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.link, color: Colors.blue, size: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Link',
+                          style: GoogleFonts.montserrat(
+                            color: Colors.blue,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  IconData _getFileIcon(String extension) {
+    switch (extension.toLowerCase()) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'doc':
+      case 'docx':
+        return Icons.description;
+      case 'txt':
+        return Icons.text_snippet;
+      case 'ppt':
+      case 'pptx':
+        return Icons.slideshow;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return Icons.image;
+      default:
+        return Icons.insert_drive_file;
+    }
+  }
+
+  Color _getFileColor(String extension) {
+    switch (extension.toLowerCase()) {
+      case 'pdf':
+        return Colors.red;
+      case 'doc':
+      case 'docx':
+        return Colors.blue;
+      case 'txt':
+        return Colors.grey;
+      case 'ppt':
+      case 'pptx':
+        return Colors.orange;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return Colors.purple;
+      default:
+        return Colors.cyan;
+    }
+  }
+
+  void _openFile(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        final result = await OpenFile.open(filePath);
+        if (result.type != ResultType.done && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not open file: ${result.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File not found. It may have been moved or deleted.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening file: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _openLink(String url) async {
@@ -551,7 +804,10 @@ class _BooksTabState extends State<_BooksTab> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open link')),
+          const SnackBar(
+            content: Text('Could not open link'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -564,7 +820,10 @@ class _BooksTabState extends State<_BooksTab> {
     box.put('books', books);
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Book deleted')),
+      const SnackBar(
+        content: Text('Book deleted'),
+        backgroundColor: Colors.orange,
+      ),
     );
   }
 }
@@ -795,7 +1054,10 @@ class _NotesTabState extends State<_NotesTab> {
     box.put('notes', notes);
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Note deleted')),
+      const SnackBar(
+        content: Text('Note deleted'),
+        backgroundColor: Colors.orange,
+      ),
     );
   }
 }

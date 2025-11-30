@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../services/battery_service.dart';
 import '../services/auth_service.dart';
+import 'auth_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -94,6 +95,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    }
+  }
+
+  Future<void> _logout() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey.shade900,
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Are you sure you want to logout?\n\nYour data will be preserved.',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      // Only clear session flag, keep all user data
+      final userPrefs = Hive.box('user_prefs');
+      await userPrefs.put('is_logged_in', false);
+      
+      // Navigate to auth screen
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AuthScreen()),
+          (route) => false,
+        );
+      }
     }
   }
 
@@ -409,6 +448,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 );
               },
+            ),
+            
+            const SizedBox(height: 32),
+            
+            // Logout Button
+            Card(
+              color: Colors.red.shade900.withOpacity(0.3),
+              child: ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                subtitle: const Text(
+                  'Sign out of your account',
+                  style: TextStyle(color: Colors.grey),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.red, size: 16),
+                onTap: _logout,
+              ),
             ),
             
             const SizedBox(height: 32),

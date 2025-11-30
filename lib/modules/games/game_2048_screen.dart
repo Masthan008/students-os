@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../widgets/glass_container.dart';
+import '../../services/game_time_service.dart';
 
 enum Direction { up, down, left, right }
 
@@ -12,6 +13,7 @@ class Game2048Screen extends StatefulWidget {
 }
 
 class _Game2048ScreenState extends State<Game2048Screen> {
+  static const String gameName = 'game_2048';
   late List<List<int>> _grid;
   int _score = 0;
   bool _gameOver = false;
@@ -19,7 +21,50 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   @override
   void initState() {
     super.initState();
-    _initializeGame();
+    _checkGameAccess();
+  }
+
+  Future<void> _checkGameAccess() async {
+    final canPlay = await GameTimeService.canPlayGame(gameName);
+    if (!canPlay) {
+      final status = await GameTimeService.getGameStatus(gameName);
+      if (mounted) {
+        _showCooldownDialog(status['cooldownRemainingMinutes']);
+      }
+    } else {
+      await GameTimeService.startGameSession(gameName);
+      _initializeGame();
+    }
+  }
+
+  void _showCooldownDialog(int minutes) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1a1a2e),
+        title: const Text('⏰ Game Time Limit', style: TextStyle(color: Colors.orange)),
+        content: Text(
+          'You have played for 20 minutes today!\n\nCome back in ${GameTimeService.getTimeRemainingMessage(minutes)} to play again.',
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('OK', style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    GameTimeService.endGameSession(gameName);
+    super.dispose();
   }
 
   void _initializeGame() {

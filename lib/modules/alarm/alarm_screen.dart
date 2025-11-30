@@ -30,6 +30,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // History Button
+            FloatingActionButton.extended(
+              heroTag: 'history',
+              backgroundColor: Colors.grey.shade800,
+              onPressed: () => _showHistoryDialog(context, provider),
+              icon: const Icon(Icons.history, color: Colors.white),
+              label: const Text(
+                'History',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(width: 12),
             // Power Nap Button
             FloatingActionButton.extended(
               heroTag: 'power_nap',
@@ -41,7 +53,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             // Add Alarm Button
             FloatingActionButton(
               heroTag: 'add_alarm',
@@ -501,3 +513,114 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 }
+
+  void _showHistoryDialog(BuildContext context, AlarmProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return GlassContainer(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height * 0.7,
+          borderRadius: 30,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Alarm History",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (provider.alarmHistory.isNotEmpty)
+                    TextButton(
+                      onPressed: () {
+                        provider.clearHistory();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('History cleared'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Clear All',
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: provider.alarmHistory.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No alarm history yet',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: provider.alarmHistory.length,
+                        itemBuilder: (context, index) {
+                          final entry = provider.alarmHistory[index];
+                          final timestamp = DateTime.parse(entry['timestamp']);
+                          final dateStr = '${timestamp.day}/${timestamp.month}/${timestamp.year}';
+                          final timeStr = '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
+                          
+                          IconData icon;
+                          Color iconColor;
+                          
+                          switch (entry['action']) {
+                            case 'Deleted':
+                              icon = Icons.delete;
+                              iconColor = Colors.red;
+                              break;
+                            case 'Dismissed':
+                              icon = Icons.check_circle;
+                              iconColor = Colors.green;
+                              break;
+                            default:
+                              icon = Icons.snooze;
+                              iconColor = Colors.orange;
+                          }
+                          
+                          return Card(
+                            color: Colors.white.withOpacity(0.1),
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: ListTile(
+                              leading: Icon(icon, color: iconColor),
+                              title: Text(
+                                entry['title'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                '${entry['action']} • $dateStr at $timeStr',
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                              trailing: Text(
+                                entry['time'],
+                                style: const TextStyle(
+                                  color: Colors.cyanAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }

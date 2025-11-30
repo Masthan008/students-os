@@ -2,19 +2,67 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'package:alarm/alarm.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'alarm_service.dart';
 import '../../main.dart'; // For navigatorKey
 
 class AlarmProvider extends ChangeNotifier {
   List<AlarmSettings> _alarms = [];
   List<AlarmSettings> get alarms => _alarms;
+  
+  // Alarm history
+  List<Map<String, dynamic>> _alarmHistory = [];
+  List<Map<String, dynamic>> get alarmHistory => _alarmHistory;
 
   AlarmProvider() {
     _loadAlarms();
-    // Delay slightly to allow context to be ready if needed, though AssetBundle might not need it immediately if we use rootBundle
-    // But we used DefaultAssetBundle.of(context).
-    // Let's use rootBundle instead to avoid context issues in constructor.
+    _loadHistory();
     loadSounds();
+  }
+  
+  Future<void> _loadHistory() async {
+    try {
+      final box = await Hive.openBox('alarm_history');
+      final history = box.get('history', defaultValue: <dynamic>[]);
+      _alarmHistory = List<Map<String, dynamic>>.from(
+        history.map((item) => Map<String, dynamic>.from(item))
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading alarm history: $e');
+    }
+  }
+  
+  Future<void> _saveHistory() async {
+    try {
+      final box = await Hive.openBox('alarm_history');
+      await box.put('history', _alarmHistory);
+    } catch (e) {
+      debugPrint('Error saving alarm history: $e');
+    }
+  }
+  
+  Future<void> addToHistory(String title, String time, String action) async {
+    _alarmHistory.insert(0, {
+      'title': title,
+      'time': time,
+      'action': action,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+    
+    // Keep only last 50 entries
+    if (_alarmHistory.length > 50) {
+      _alarmHistory = _alarmHistory.sublist(0, 50);
+    }
+    
+    await _saveHistory();
+    notifyListeners();
+  }
+  
+  Future<void> clearHistory() async {
+    _alarmHistory.clear();
+    await _saveHistory();
+    notifyListeners();
   }
 
   Future<void> _loadAlarms() async {
@@ -79,7 +127,15 @@ class AlarmProvider extends ChangeNotifier {
 
   Future<void> stopAlarm(int id) async {
     try {
+      // Find alarm before stopping to log it
+      final alarm = _alarms.firstWhere((a) => a.id == id, orElse: () => _alarms.first);
+      final timeStr = '${alarm.dateTime.hour}:${alarm.dateTime.minute.toString().padLeft(2, '0')}';
+      
       await AlarmService.stopAlarm(id);
+      
+      // Add to history
+      await addToHistory('Alarm Deleted', timeStr, 'Deleted');
+      
       // Force remove from local list immediately
       _alarms.removeWhere((alarm) => alarm.id == id);
       notifyListeners();
@@ -89,6 +145,21 @@ class AlarmProvider extends ChangeNotifier {
       debugPrint('Error stopping alarm $id: $e');
       // Still try to reload
       await _loadAlarms();
+    }
+  }
+  
+  Future<void> snoozeAlarm(AlarmSettings settings, int minutes) async {
+    try {
+      final timeStr = '${settings.dateTime.hour}:${settings.dateTime.minute.toString().padLeft(2, '0')}';
+      
+      await AlarmService.snoozeAlarm(settings, duration: Duration(minutes: minutes));
+      
+      // Add to history
+      await addToHistory('Alarm Snoozed', timeStr, 'Snoozed for $minutes min');
+      
+      await _loadAlarms();
+    } catch (e) {
+      debugPrint('Error snoozing alarm: $e');
     }
   }
 

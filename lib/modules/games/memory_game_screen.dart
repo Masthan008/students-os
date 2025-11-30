@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
+import '../../services/game_time_service.dart';
 
 class MemoryGameScreen extends StatefulWidget {
   const MemoryGameScreen({super.key});
@@ -10,12 +11,62 @@ class MemoryGameScreen extends StatefulWidget {
 }
 
 class _MemoryGameScreenState extends State<MemoryGameScreen> {
+  static const String gameName = 'memory_match';
   List<GameCard> _cards = [];
   List<int> _flippedIndices = [];
   bool _isChecking = false;
   int _moves = 0;
   int _matches = 0;
   int _bestScore = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkGameAccess();
+  }
+
+  Future<void> _checkGameAccess() async {
+    final canPlay = await GameTimeService.canPlayGame(gameName);
+    if (!canPlay) {
+      final status = await GameTimeService.getGameStatus(gameName);
+      if (mounted) {
+        _showCooldownDialog(status['cooldownRemainingMinutes']);
+      }
+    } else {
+      await GameTimeService.startGameSession(gameName);
+      _initializeGame();
+    }
+  }
+
+  void _showCooldownDialog(int minutes) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1a1a2e),
+        title: const Text('⏰ Game Time Limit', style: TextStyle(color: Colors.orange)),
+        content: Text(
+          'You have played for 20 minutes today!\n\nCome back in ${GameTimeService.getTimeRemainingMessage(minutes)} to play again.',
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('OK', style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    GameTimeService.endGameSession(gameName);
+    super.dispose();
+  }
 
   final List<IconData> _icons = [
     Icons.star,
@@ -27,12 +78,6 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
     Icons.emoji_emotions,
     Icons.pets,
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeGame();
-  }
 
   void _initializeGame() {
     // Create pairs of cards

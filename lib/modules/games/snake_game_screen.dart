@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math';
+import '../../services/game_time_service.dart';
 
 class SnakeGameScreen extends StatefulWidget {
   const SnakeGameScreen({super.key});
@@ -10,6 +11,7 @@ class SnakeGameScreen extends StatefulWidget {
 }
 
 class _SnakeGameScreenState extends State<SnakeGameScreen> {
+  static const String gameName = 'snake_game';
   static const int rows = 20;
   static const int columns = 20;
   
@@ -21,7 +23,50 @@ class _SnakeGameScreenState extends State<SnakeGameScreen> {
   Timer? timer;
 
   @override
+  void initState() {
+    super.initState();
+    _checkGameAccess();
+  }
+
+  Future<void> _checkGameAccess() async {
+    final canPlay = await GameTimeService.canPlayGame(gameName);
+    if (!canPlay) {
+      final status = await GameTimeService.getGameStatus(gameName);
+      if (mounted) {
+        _showCooldownDialog(status['cooldownRemainingMinutes']);
+      }
+    } else {
+      await GameTimeService.startGameSession(gameName);
+    }
+  }
+
+  void _showCooldownDialog(int minutes) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1a1a2e),
+        title: const Text('⏰ Game Time Limit', style: TextStyle(color: Colors.orange)),
+        content: Text(
+          'You have played for 20 minutes today!\n\nCome back in ${GameTimeService.getTimeRemainingMessage(minutes)} to play again.',
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('OK', style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   void dispose() {
+    GameTimeService.endGameSession(gameName);
     timer?.cancel();
     super.dispose();
   }

@@ -9,7 +9,7 @@ class CalculatorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 6,
+      length: 9,
       child: Scaffold(
         backgroundColor: const Color(0xFF2A2A2A),
         appBar: AppBar(
@@ -34,6 +34,9 @@ class CalculatorScreen extends StatelessWidget {
               Tab(icon: Icon(Icons.monitor_weight), text: 'BMI'),
               Tab(icon: Icon(Icons.cake), text: 'Age'),
               Tab(icon: Icon(Icons.functions), text: 'Equation'),
+              Tab(icon: Icon(Icons.percent), text: 'Percent'),
+              Tab(icon: Icon(Icons.restaurant), text: 'Tip'),
+              Tab(icon: Icon(Icons.account_balance), text: 'Loan'),
             ],
           ),
         ),
@@ -45,6 +48,9 @@ class CalculatorScreen extends StatelessWidget {
             _BMITab(),
             _AgeCalculatorTab(),
             _EquationSolverTab(),
+            _PercentageTab(),
+            _TipCalculatorTab(),
+            _LoanCalculatorTab(),
           ],
         ),
       ),
@@ -1394,6 +1400,804 @@ class _EquationSolverTabState extends State<_EquationSolverTab> {
           ],
         ],
       ),
+    );
+  }
+}
+
+// ============================================
+// TAB 7: Percentage Calculator
+// ============================================
+class _PercentageTab extends StatefulWidget {
+  const _PercentageTab();
+
+  @override
+  State<_PercentageTab> createState() => _PercentageTabState();
+}
+
+class _PercentageTabState extends State<_PercentageTab> {
+  final TextEditingController _valueController = TextEditingController();
+  final TextEditingController _percentController = TextEditingController();
+  final TextEditingController _totalController = TextEditingController();
+  
+  double _percentOfValue = 0;
+  double _percentageResult = 0;
+  double _increaseResult = 0;
+  double _decreaseResult = 0;
+
+  void _calculate() {
+    final value = double.tryParse(_valueController.text) ?? 0;
+    final percent = double.tryParse(_percentController.text) ?? 0;
+    final total = double.tryParse(_totalController.text) ?? 0;
+
+    setState(() {
+      _percentOfValue = (percent / 100) * value;
+      _percentageResult = total > 0 ? (value / total) * 100 : 0;
+      _increaseResult = value + (value * percent / 100);
+      _decreaseResult = value - (value * percent / 100);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          // What is X% of Y?
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'What is X% of Y?',
+                  style: GoogleFonts.orbitron(
+                    color: Colors.cyanAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _percentController,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          labelText: 'Percent (%)',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _calculate(),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('of', style: TextStyle(color: Colors.white70)),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _valueController,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          labelText: 'Value',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _calculate(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF9EA792),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Result:',
+                        style: GoogleFonts.montserrat(
+                          color: Colors.black87,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        _percentOfValue.toStringAsFixed(2),
+                        style: GoogleFonts.orbitron(
+                          color: Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          // X is what % of Y?
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'X is what % of Y?',
+                  style: GoogleFonts.orbitron(
+                    color: Colors.cyanAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _valueController,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          labelText: 'Value',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _calculate(),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('of', style: TextStyle(color: Colors.white70)),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _totalController,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: Colors.white),
+                        decoration: const InputDecoration(
+                          labelText: 'Total',
+                          labelStyle: TextStyle(color: Colors.grey),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _calculate(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF9EA792),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Result:',
+                        style: GoogleFonts.montserrat(
+                          color: Colors.black87,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        '${_percentageResult.toStringAsFixed(2)}%',
+                        style: GoogleFonts.orbitron(
+                          color: Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          // Increase/Decrease by %
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Increase/Decrease by %',
+                  style: GoogleFonts.orbitron(
+                    color: Colors.cyanAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green),
+                        ),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.arrow_upward, color: Colors.green),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Increase',
+                              style: GoogleFonts.montserrat(color: Colors.white70),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _increaseResult.toStringAsFixed(2),
+                              style: GoogleFonts.orbitron(
+                                color: Colors.green,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red),
+                        ),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.arrow_downward, color: Colors.red),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Decrease',
+                              style: GoogleFonts.montserrat(color: Colors.white70),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              _decreaseResult.toStringAsFixed(2),
+                              style: GoogleFonts.orbitron(
+                                color: Colors.red,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================
+// TAB 8: Tip Calculator
+// ============================================
+class _TipCalculatorTab extends StatefulWidget {
+  const _TipCalculatorTab();
+
+  @override
+  State<_TipCalculatorTab> createState() => _TipCalculatorTabState();
+}
+
+class _TipCalculatorTabState extends State<_TipCalculatorTab> {
+  final TextEditingController _billController = TextEditingController();
+  double _tipPercent = 15;
+  int _splitCount = 1;
+  
+  double _tipAmount = 0;
+  double _totalAmount = 0;
+  double _perPerson = 0;
+
+  void _calculate() {
+    final bill = double.tryParse(_billController.text) ?? 0;
+    
+    setState(() {
+      _tipAmount = bill * (_tipPercent / 100);
+      _totalAmount = bill + _tipAmount;
+      _perPerson = _splitCount > 0 ? _totalAmount / _splitCount : 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bill Amount',
+                  style: GoogleFonts.montserrat(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _billController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 32),
+                  decoration: const InputDecoration(
+                    prefixText: '\$ ',
+                    prefixStyle: TextStyle(color: Colors.cyanAccent, fontSize: 32),
+                    border: InputBorder.none,
+                    hintText: '0.00',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                  onChanged: (_) => _calculate(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Tip Percentage',
+                      style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16),
+                    ),
+                    Text(
+                      '${_tipPercent.toInt()}%',
+                      style: GoogleFonts.orbitron(
+                        color: Colors.cyanAccent,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Slider(
+                  value: _tipPercent,
+                  min: 0,
+                  max: 50,
+                  divisions: 50,
+                  activeColor: Colors.cyanAccent,
+                  inactiveColor: Colors.grey,
+                  onChanged: (val) {
+                    setState(() {
+                      _tipPercent = val;
+                      _calculate();
+                    });
+                  },
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [10, 15, 18, 20, 25].map((percent) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _tipPercent = percent.toDouble();
+                          _calculate();
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: _tipPercent == percent 
+                              ? Colors.cyanAccent 
+                              : Colors.grey.shade800,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '$percent%',
+                          style: TextStyle(
+                            color: _tipPercent == percent 
+                                ? Colors.black 
+                                : Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Split Between',
+                      style: GoogleFonts.montserrat(color: Colors.white, fontSize: 16),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (_splitCount > 1) {
+                              setState(() {
+                                _splitCount--;
+                                _calculate();
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.remove_circle, color: Colors.red),
+                        ),
+                        Text(
+                          '$_splitCount',
+                          style: GoogleFonts.orbitron(
+                            color: Colors.cyanAccent,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _splitCount++;
+                              _calculate();
+                            });
+                          },
+                          icon: const Icon(Icons.add_circle, color: Colors.green),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.cyanAccent.withOpacity(0.3), Colors.blueAccent.withOpacity(0.3)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.cyanAccent),
+            ),
+            child: Column(
+              children: [
+                _buildResultRow('Tip Amount', '\$${_tipAmount.toStringAsFixed(2)}'),
+                const Divider(color: Colors.white30, height: 32),
+                _buildResultRow('Total Amount', '\$${_totalAmount.toStringAsFixed(2)}'),
+                const Divider(color: Colors.white30, height: 32),
+                _buildResultRow('Per Person', '\$${_perPerson.toStringAsFixed(2)}', isLarge: true),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultRow(String label, String value, {bool isLarge = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.montserrat(
+            color: Colors.white70,
+            fontSize: isLarge ? 18 : 16,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.orbitron(
+            color: Colors.cyanAccent,
+            fontSize: isLarge ? 32 : 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================
+// TAB 9: Loan Calculator
+// ============================================
+class _LoanCalculatorTab extends StatefulWidget {
+  const _LoanCalculatorTab();
+
+  @override
+  State<_LoanCalculatorTab> createState() => _LoanCalculatorTabState();
+}
+
+class _LoanCalculatorTabState extends State<_LoanCalculatorTab> {
+  final TextEditingController _principalController = TextEditingController();
+  final TextEditingController _rateController = TextEditingController();
+  final TextEditingController _yearsController = TextEditingController();
+  
+  double _monthlyPayment = 0;
+  double _totalPayment = 0;
+  double _totalInterest = 0;
+
+  void _calculate() {
+    final principal = double.tryParse(_principalController.text) ?? 0;
+    final annualRate = double.tryParse(_rateController.text) ?? 0;
+    final years = double.tryParse(_yearsController.text) ?? 0;
+
+    if (principal > 0 && annualRate > 0 && years > 0) {
+      final monthlyRate = annualRate / 100 / 12;
+      final numPayments = years * 12;
+      
+      final monthly = principal * 
+          (monthlyRate * math.pow(1 + monthlyRate, numPayments)) / 
+          (math.pow(1 + monthlyRate, numPayments) - 1);
+      
+      final total = monthly * numPayments;
+      final interest = total - principal;
+
+      setState(() {
+        _monthlyPayment = monthly;
+        _totalPayment = total;
+        _totalInterest = interest;
+      });
+    } else {
+      setState(() {
+        _monthlyPayment = 0;
+        _totalPayment = 0;
+        _totalInterest = 0;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _principalController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: const InputDecoration(
+                    labelText: 'Loan Amount (\$)',
+                    labelStyle: TextStyle(color: Colors.cyanAccent),
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.attach_money, color: Colors.cyanAccent),
+                  ),
+                  onChanged: (_) => _calculate(),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _rateController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: const InputDecoration(
+                    labelText: 'Annual Interest Rate (%)',
+                    labelStyle: TextStyle(color: Colors.cyanAccent),
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.percent, color: Colors.cyanAccent),
+                  ),
+                  onChanged: (_) => _calculate(),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _yearsController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: const InputDecoration(
+                    labelText: 'Loan Term (Years)',
+                    labelStyle: TextStyle(color: Colors.cyanAccent),
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.calendar_today, color: Colors.cyanAccent),
+                  ),
+                  onChanged: (_) => _calculate(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          
+          if (_monthlyPayment > 0) ...[
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green.withOpacity(0.3), Colors.teal.withOpacity(0.3)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.green, width: 2),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Monthly Payment',
+                    style: GoogleFonts.orbitron(color: Colors.white70, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    '\$${_monthlyPayment.toStringAsFixed(2)}',
+                    style: GoogleFonts.orbitron(
+                      color: Colors.greenAccent,
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  _buildLoanDetailRow('Total Payment', '\$${_totalPayment.toStringAsFixed(2)}'),
+                  const Divider(color: Colors.grey, height: 32),
+                  _buildLoanDetailRow('Total Interest', '\$${_totalInterest.toStringAsFixed(2)}'),
+                  const Divider(color: Colors.grey, height: 32),
+                  _buildLoanDetailRow('Principal', '\$${_principalController.text}'),
+                  const Divider(color: Colors.grey, height: 32),
+                  _buildLoanDetailRow('Number of Payments', '${(double.tryParse(_yearsController.text) ?? 0) * 12}'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Payment Breakdown',
+                    style: GoogleFonts.orbitron(
+                      color: Colors.cyanAccent,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: (_principalController.text.isNotEmpty 
+                            ? double.parse(_principalController.text) 
+                            : 0).toInt(),
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Principal',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: _totalInterest.toInt(),
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.orange,
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Interest',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoanDetailRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 16),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.orbitron(
+            color: Colors.cyanAccent,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }

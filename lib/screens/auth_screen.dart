@@ -36,11 +36,29 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       final box = Hive.box('user_prefs');
+      final userId = _idController.text;
+      
+      // Check if this user ID is already registered
+      final existingUser = box.get('registered_user_$userId');
+      if (existingUser != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This ID is already registered! Please use a different ID or login.'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+      
+      // Mark this user ID as registered
+      await box.put('registered_user_$userId', true);
       await box.put('user_role', 'student');
       await box.put('user_name', _nameController.text);
-      await box.put('user_id', _idController.text);
+      await box.put('user_id', userId);
       await box.put('user_branch', _selectedBranch);
       await box.put('user_section', _selectedSection);
+      await box.put('is_logged_in', true);
       if (_profileImagePath != null) {
         await box.put('user_photo', _profileImagePath);
       }
@@ -91,6 +109,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 final box = Hive.box('user_prefs');
                 await box.put('user_role', 'teacher');
                 await box.put('user_name', 'Faculty');
+                await box.put('is_logged_in', true);
                 
                 if (mounted) {
                   Navigator.of(context).pop();

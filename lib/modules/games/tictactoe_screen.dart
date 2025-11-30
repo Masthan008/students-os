@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
+import '../../services/game_time_service.dart';
 
 class TicTacToeScreen extends StatefulWidget {
   const TicTacToeScreen({super.key});
@@ -10,12 +11,61 @@ class TicTacToeScreen extends StatefulWidget {
 }
 
 class _TicTacToeScreenState extends State<TicTacToeScreen> {
+  static const String gameName = 'tictactoe';
   List<String> _board = List.filled(9, '');
   bool _isPlayerTurn = true; // true = X (player), false = O (AI)
   String _winner = '';
   int _playerScore = 0;
   int _aiScore = 0;
   int _draws = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkGameAccess();
+  }
+
+  Future<void> _checkGameAccess() async {
+    final canPlay = await GameTimeService.canPlayGame(gameName);
+    if (!canPlay) {
+      final status = await GameTimeService.getGameStatus(gameName);
+      if (mounted) {
+        _showCooldownDialog(status['cooldownRemainingMinutes']);
+      }
+    } else {
+      await GameTimeService.startGameSession(gameName);
+    }
+  }
+
+  void _showCooldownDialog(int minutes) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1a1a2e),
+        title: const Text('⏰ Game Time Limit', style: TextStyle(color: Colors.orange)),
+        content: Text(
+          'You have played for 20 minutes today!\n\nCome back in ${GameTimeService.getTimeRemainingMessage(minutes)} to play again.',
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('OK', style: TextStyle(color: Colors.cyanAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    GameTimeService.endGameSession(gameName);
+    super.dispose();
+  }
 
   void _makeMove(int index) {
     if (_board[index].isEmpty && _winner.isEmpty && _isPlayerTurn) {

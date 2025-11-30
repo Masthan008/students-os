@@ -18,10 +18,18 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
+  late String _currentUserId;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadCurrentUser();
+  }
+
+  void _loadCurrentUser() {
+    final box = Hive.box('user_prefs');
+    _currentUserId = box.get('user_id', defaultValue: 'default_user');
   }
 
   @override
@@ -98,8 +106,8 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
             child: TabBarView(
               controller: _tabController,
               children: [
-                _BooksTab(searchQuery: _searchQuery),
-                _NotesTab(searchQuery: _searchQuery),
+                _BooksTab(searchQuery: _searchQuery, currentUserId: _currentUserId),
+                _NotesTab(searchQuery: _searchQuery, currentUserId: _currentUserId),
               ],
             ),
           ),
@@ -314,7 +322,8 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
                   final box = Hive.box('books_notes');
-                  final books = List<Map<String, dynamic>>.from(box.get('books', defaultValue: []));
+                  final userBooksKey = 'books_$_currentUserId';
+                  final books = List<Map<String, dynamic>>.from(box.get(userBooksKey, defaultValue: []));
                   books.add({
                     'id': DateTime.now().millisecondsSinceEpoch,
                     'title': titleController.text,
@@ -325,7 +334,7 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
                     'subject': selectedSubject,
                     'createdAt': DateTime.now().toIso8601String(),
                   });
-                  box.put('books', books);
+                  box.put(userBooksKey, books);
                   Navigator.pop(context);
                   setState(() {});
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -426,15 +435,17 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
             onPressed: () {
               if (titleController.text.isNotEmpty && contentController.text.isNotEmpty) {
                 final box = Hive.box('books_notes');
-                final notes = List<Map<String, dynamic>>.from(box.get('notes', defaultValue: []));
+                final userNotesKey = 'notes_$_currentUserId';
+                final notes = List<Map<String, dynamic>>.from(box.get(userNotesKey, defaultValue: []));
                 notes.add({
                   'id': DateTime.now().millisecondsSinceEpoch,
                   'title': titleController.text,
                   'content': contentController.text,
                   'subject': selectedSubject,
+                  'userId': _currentUserId,
                   'createdAt': DateTime.now().toIso8601String(),
                 });
-                box.put('notes', notes);
+                box.put(userNotesKey, notes);
                 Navigator.pop(context);
                 setState(() {});
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -458,8 +469,9 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
 // ============================================
 class _BooksTab extends StatefulWidget {
   final String searchQuery;
+  final String currentUserId;
 
-  const _BooksTab({required this.searchQuery});
+  const _BooksTab({required this.searchQuery, required this.currentUserId});
 
   @override
   State<_BooksTab> createState() => _BooksTabState();
@@ -471,7 +483,8 @@ class _BooksTabState extends State<_BooksTab> {
     return ValueListenableBuilder(
       valueListenable: Hive.box('books_notes').listenable(),
       builder: (context, box, _) {
-        final books = List<Map<String, dynamic>>.from(box.get('books', defaultValue: []));
+        final userBooksKey = 'books_${widget.currentUserId}';
+        final books = List<Map<String, dynamic>>.from(box.get(userBooksKey, defaultValue: []));
         
         final filteredBooks = widget.searchQuery.isEmpty
             ? books
@@ -815,9 +828,10 @@ class _BooksTabState extends State<_BooksTab> {
 
   void _deleteBook(int id) {
     final box = Hive.box('books_notes');
-    final books = List<Map<String, dynamic>>.from(box.get('books', defaultValue: []));
+    final userBooksKey = 'books_${widget.currentUserId}';
+    final books = List<Map<String, dynamic>>.from(box.get(userBooksKey, defaultValue: []));
     books.removeWhere((book) => book['id'] == id);
-    box.put('books', books);
+    box.put(userBooksKey, books);
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -833,8 +847,9 @@ class _BooksTabState extends State<_BooksTab> {
 // ============================================
 class _NotesTab extends StatefulWidget {
   final String searchQuery;
+  final String currentUserId;
 
-  const _NotesTab({required this.searchQuery});
+  const _NotesTab({required this.searchQuery, required this.currentUserId});
 
   @override
   State<_NotesTab> createState() => _NotesTabState();
@@ -846,7 +861,8 @@ class _NotesTabState extends State<_NotesTab> {
     return ValueListenableBuilder(
       valueListenable: Hive.box('books_notes').listenable(),
       builder: (context, box, _) {
-        final notes = List<Map<String, dynamic>>.from(box.get('notes', defaultValue: []));
+        final userNotesKey = 'notes_${widget.currentUserId}';
+        final notes = List<Map<String, dynamic>>.from(box.get(userNotesKey, defaultValue: []));
         
         final filteredNotes = widget.searchQuery.isEmpty
             ? notes
@@ -1049,9 +1065,10 @@ class _NotesTabState extends State<_NotesTab> {
 
   void _deleteNote(int id) {
     final box = Hive.box('books_notes');
-    final notes = List<Map<String, dynamic>>.from(box.get('notes', defaultValue: []));
+    final userNotesKey = 'notes_${widget.currentUserId}';
+    final notes = List<Map<String, dynamic>>.from(box.get(userNotesKey, defaultValue: []));
     notes.removeWhere((note) => note['id'] == id);
-    box.put('notes', notes);
+    box.put(userNotesKey, notes);
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

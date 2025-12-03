@@ -337,12 +337,7 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
                   box.put(userBooksKey, books);
                   Navigator.pop(context);
                   setState(() {});
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Book added successfully'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  // Book added - no notification needed
                 }
               },
               child: const Text('Add', style: TextStyle(color: Colors.cyanAccent)),
@@ -448,12 +443,7 @@ class _BooksNotesScreenState extends State<BooksNotesScreen> with SingleTickerPr
                 box.put(userNotesKey, notes);
                 Navigator.pop(context);
                 setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Note added successfully'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
+                // Note added - no notification needed
               }
             },
             child: const Text('Add', style: TextStyle(color: Colors.cyanAccent)),

@@ -36,26 +36,10 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       final box = Hive.box('user_prefs');
-      final userId = _idController.text;
       
-      // Check if this user ID is already registered
-      final existingUser = box.get('registered_user_$userId');
-      if (existingUser != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('This ID is already registered! Please use a different ID or login.'),
-            backgroundColor: Colors.orange,
-            duration: Duration(seconds: 3),
-          ),
-        );
-        return;
-      }
-      
-      // Mark this user ID as registered
-      await box.put('registered_user_$userId', true);
       await box.put('user_role', 'student');
       await box.put('user_name', _nameController.text);
-      await box.put('user_id', userId);
+      await box.put('user_id', _idController.text);
       await box.put('user_branch', _selectedBranch);
       await box.put('user_section', _selectedSection);
       await box.put('is_logged_in', true);
@@ -150,7 +134,7 @@ class _AuthScreenState extends State<AuthScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "STUDENT REGISTRATION",
+                "STUDENT ENTRY",
                 style: GoogleFonts.orbitron(
                   color: Colors.cyanAccent,
                   fontSize: 24,
@@ -206,21 +190,12 @@ class _AuthScreenState extends State<AuthScreen> {
                               shape: BoxShape.circle,
                               color: Colors.grey[800],
                               border: Border.all(color: Colors.cyanAccent, width: 3),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.cyanAccent.withOpacity(0.3),
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                ),
-                              ],
                             ),
                             child: _profileImagePath != null
                                 ? ClipOval(
                                     child: Image.file(
                                       File(_profileImagePath!),
                                       fit: BoxFit.cover,
-                                      width: 100,
-                                      height: 100,
                                     ),
                                   )
                                 : const Icon(
@@ -234,42 +209,12 @@ class _AuthScreenState extends State<AuthScreen> {
                       const SizedBox(height: 10),
                       Center(
                         child: Text(
-                          "Tap to add photo",
+                          "Tap to add photo (optional)",
                           style: GoogleFonts.montserrat(
                             color: Colors.grey,
                             fontSize: 12,
                           ),
                         ),
-                      ),
-                      const Divider(color: Colors.grey, height: 30),
-                      
-                      // Header
-                      Row(
-                        children: [
-                          const Icon(Icons.school, color: Colors.cyanAccent, size: 40),
-                          const SizedBox(width: 15),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "RGMCET",
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                "IDENTITY CARD",
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                  letterSpacing: 1.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
                       ),
                       const Divider(color: Colors.grey, height: 30),
 
@@ -335,7 +280,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ],
                             ),
                             child: Text(
-                              "SAVE PROFILE",
+                              "ENTER APP",
                               style: GoogleFonts.montserrat(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -371,9 +316,9 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint) {
+  Widget _buildTextField(TextEditingController ctrl, String hint) {
     return TextFormField(
-      controller: controller,
+      controller: ctrl,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hint,

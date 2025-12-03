@@ -18,6 +18,7 @@ import '../modules/sleep/sleep_screen.dart';
 import '../modules/cyber/cyber_vault_screen.dart';
 import '../modules/coding/coding_lab_screen.dart';
 import '../modules/coding/compiler_screen.dart';
+import '../modules/coding/leetcode_screen.dart';
 import '../modules/news/news_screen.dart';
 import '../modules/academic/syllabus_screen.dart';
 import '../modules/academic/books_notes_screen.dart';
@@ -290,6 +291,22 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.code_off, color: Colors.orange),
+              title: const Text(
+                'LeetCode Problems',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LeetCodeScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.computer, color: Colors.cyanAccent),
               title: const Text(
                 'Online Compilers',
@@ -322,22 +339,6 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.library_books, color: Colors.purple),
-              title: const Text(
-                'Books & Notes',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BooksNotesScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.map, color: Colors.blue),
               title: const Text(
                 'Tech Roadmaps',
@@ -349,6 +350,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const RoadmapsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.chat_bubble, color: Colors.purple),
+              title: const Text(
+                'Community Chat',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ChatScreen(),
                   ),
                 );
               },

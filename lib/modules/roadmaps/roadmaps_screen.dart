@@ -30,6 +30,8 @@ class _RoadmapsScreenState extends State<RoadmapsScreen> {
     'Testing',
     'Product Management',
     'AI/ML',
+    'Database',
+    'Architecture',
   ];
 
   @override

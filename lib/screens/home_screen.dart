@@ -21,6 +21,7 @@ import '../modules/coding/compiler_screen.dart';
 import '../modules/news/news_screen.dart';
 import '../modules/academic/syllabus_screen.dart';
 import '../modules/academic/books_notes_screen.dart';
+import '../modules/roadmaps/roadmaps_screen.dart';
 import 'timetable_screen.dart';
 import 'calendar_screen.dart';
 import 'attendance_screen.dart';
@@ -332,6 +333,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const BooksNotesScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.map, color: Colors.blue),
+              title: const Text(
+                'Tech Roadmaps',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RoadmapsScreen(),
                   ),
                 );
               },

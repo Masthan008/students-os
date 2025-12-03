@@ -894,6 +894,457 @@ int main() {
 }''',
       output: '2024 is a leap year',
     ),
+    
+    ProgramData(
+      name: 'Reverse Number',
+      description: 'Reverse a given number',
+      code: '''#include <stdio.h>
+
+int main() {
+    int num = 12345, rev = 0, digit;
+    
+    while (num != 0) {
+        digit = num % 10;
+        rev = rev * 10 + digit;
+        num /= 10;
+    }
+    
+    printf("Reversed number: %d", rev);
+    return 0;
+}''',
+      output: 'Reversed number: 54321',
+    ),
+    
+    ProgramData(
+      name: 'Even or Odd',
+      description: 'Check if number is even or odd',
+      code: '''#include <stdio.h>
+
+int main() {
+    int num = 17;
+    
+    if (num % 2 == 0)
+        printf("%d is even", num);
+    else
+        printf("%d is odd", num);
+    
+    return 0;
+}''',
+      output: '17 is odd',
+    ),
+    
+    ProgramData(
+      name: 'Sum of Natural Numbers',
+      description: 'Calculate sum of first n natural numbers',
+      code: '''#include <stdio.h>
+
+int main() {
+    int n = 10, sum = 0;
+    
+    for (int i = 1; i <= n; i++) {
+        sum += i;
+    }
+    
+    printf("Sum of first %d natural numbers: %d", n, sum);
+    return 0;
+}''',
+      output: 'Sum of first 10 natural numbers: 55',
+    ),
+    
+    ProgramData(
+      name: 'Multiplication Table',
+      description: 'Print multiplication table',
+      code: '''#include <stdio.h>
+
+int main() {
+    int num = 5;
+    
+    printf("Multiplication table of %d:\\n", num);
+    for (int i = 1; i <= 10; i++) {
+        printf("%d x %d = %d\\n", num, i, num * i);
+    }
+    
+    return 0;
+}''',
+      output: '''Multiplication table of 5:
+5 x 1 = 5
+5 x 2 = 10
+...
+5 x 10 = 50''',
+    ),
+    
+    ProgramData(
+      name: 'ASCII Value',
+      description: 'Find ASCII value of a character',
+      code: '''#include <stdio.h>
+
+int main() {
+    char ch = 'A';
+    
+    printf("ASCII value of %c is %d", ch, ch);
+    return 0;
+}''',
+      output: 'ASCII value of A is 65',
+    ),
+    
+    ProgramData(
+      name: 'Swap Using Pointers',
+      description: 'Swap two numbers using pointers',
+      code: '''#include <stdio.h>
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int main() {
+    int x = 10, y = 20;
+    
+    printf("Before swap: x = %d, y = %d\\n", x, y);
+    swap(&x, &y);
+    printf("After swap: x = %d, y = %d", x, y);
+    
+    return 0;
+}''',
+      output: '''Before swap: x = 10, y = 20
+After swap: x = 20, y = 10''',
+    ),
+    
+    ProgramData(
+      name: 'Array Reverse',
+      description: 'Reverse an array',
+      code: '''#include <stdio.h>
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int n = 5, temp;
+    
+    printf("Original array: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    
+    for (int i = 0; i < n/2; i++) {
+        temp = arr[i];
+        arr[i] = arr[n-1-i];
+        arr[n-1-i] = temp;
+    }
+    
+    printf("\\nReversed array: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    
+    return 0;
+}''',
+      output: '''Original array: 1 2 3 4 5
+Reversed array: 5 4 3 2 1''',
+    ),
+    
+    ProgramData(
+      name: 'Second Largest Element',
+      description: 'Find second largest in array',
+      code: '''#include <stdio.h>
+
+int main() {
+    int arr[] = {12, 35, 1, 10, 34, 1};
+    int n = 6, first, second;
+    
+    first = second = arr[0];
+    
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > first) {
+            second = first;
+            first = arr[i];
+        } else if (arr[i] > second && arr[i] != first) {
+            second = arr[i];
+        }
+    }
+    
+    printf("Second largest element: %d", second);
+    return 0;
+}''',
+      output: 'Second largest element: 34',
+    ),
+    
+    ProgramData(
+      name: 'Count Digits',
+      description: 'Count number of digits',
+      code: '''#include <stdio.h>
+
+int main() {
+    int num = 12345, count = 0;
+    
+    while (num != 0) {
+        num /= 10;
+        count++;
+    }
+    
+    printf("Number of digits: %d", count);
+    return 0;
+}''',
+      output: 'Number of digits: 5',
+    ),
+    
+    ProgramData(
+      name: 'Sum of Even Numbers',
+      description: 'Sum of even numbers in range',
+      code: '''#include <stdio.h>
+
+int main() {
+    int n = 20, sum = 0;
+    
+    for (int i = 2; i <= n; i += 2) {
+        sum += i;
+    }
+    
+    printf("Sum of even numbers from 1 to %d: %d", n, sum);
+    return 0;
+}''',
+      output: 'Sum of even numbers from 1 to 20: 110',
+    ),
+    
+    ProgramData(
+      name: 'Frequency of Element',
+      description: 'Count frequency of element in array',
+      code: '''#include <stdio.h>
+
+int main() {
+    int arr[] = {1, 2, 3, 2, 4, 2, 5};
+    int n = 7, search = 2, count = 0;
+    
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == search)
+            count++;
+    }
+    
+    printf("Frequency of %d: %d", search, count);
+    return 0;
+}''',
+      output: 'Frequency of 2: 3',
+    ),
+    
+    ProgramData(
+      name: 'Remove Duplicates',
+      description: 'Remove duplicates from sorted array',
+      code: '''#include <stdio.h>
+
+int main() {
+    int arr[] = {1, 1, 2, 2, 3, 4, 4, 5};
+    int n = 8, j = 0;
+    
+    for (int i = 0; i < n-1; i++) {
+        if (arr[i] != arr[i+1]) {
+            arr[j++] = arr[i];
+        }
+    }
+    arr[j++] = arr[n-1];
+    
+    printf("Array after removing duplicates: ");
+    for (int i = 0; i < j; i++)
+        printf("%d ", arr[i]);
+    
+    return 0;
+}''',
+      output: 'Array after removing duplicates: 1 2 3 4 5',
+    ),
+    
+    ProgramData(
+      name: 'Merge Two Arrays',
+      description: 'Merge two sorted arrays',
+      code: '''#include <stdio.h>
+
+int main() {
+    int arr1[] = {1, 3, 5};
+    int arr2[] = {2, 4, 6};
+    int n1 = 3, n2 = 3;
+    int merged[6];
+    int i = 0, j = 0, k = 0;
+    
+    while (i < n1 && j < n2) {
+        if (arr1[i] < arr2[j])
+            merged[k++] = arr1[i++];
+        else
+            merged[k++] = arr2[j++];
+    }
+    
+    while (i < n1) merged[k++] = arr1[i++];
+    while (j < n2) merged[k++] = arr2[j++];
+    
+    printf("Merged array: ");
+    for (i = 0; i < k; i++)
+        printf("%d ", merged[i]);
+    
+    return 0;
+}''',
+      output: 'Merged array: 1 2 3 4 5 6',
+    ),
+    
+    ProgramData(
+      name: 'Rotate Array',
+      description: 'Rotate array by n positions',
+      code: '''#include <stdio.h>
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int n = 5, d = 2, temp;
+    
+    printf("Original array: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    
+    for (int i = 0; i < d; i++) {
+        temp = arr[0];
+        for (int j = 0; j < n-1; j++) {
+            arr[j] = arr[j+1];
+        }
+        arr[n-1] = temp;
+    }
+    
+    printf("\\nRotated array: ");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+    
+    return 0;
+}''',
+      output: '''Original array: 1 2 3 4 5
+Rotated array: 3 4 5 1 2''',
+    ),
+    
+    ProgramData(
+      name: 'Diagonal Sum',
+      description: 'Sum of matrix diagonals',
+      code: '''#include <stdio.h>
+
+int main() {
+    int mat[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    int sum1 = 0, sum2 = 0;
+    
+    for (int i = 0; i < 3; i++) {
+        sum1 += mat[i][i];
+        sum2 += mat[i][2-i];
+    }
+    
+    printf("Primary diagonal sum: %d\\n", sum1);
+    printf("Secondary diagonal sum: %d", sum2);
+    
+    return 0;
+}''',
+      output: '''Primary diagonal sum: 15
+Secondary diagonal sum: 15''',
+    ),
+    
+    ProgramData(
+      name: 'Identity Matrix Check',
+      description: 'Check if matrix is identity',
+      code: '''#include <stdio.h>
+
+int main() {
+    int mat[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+    int isIdentity = 1;
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (i == j && mat[i][j] != 1) {
+                isIdentity = 0;
+                break;
+            }
+            if (i != j && mat[i][j] != 0) {
+                isIdentity = 0;
+                break;
+            }
+        }
+    }
+    
+    if (isIdentity)
+        printf("Matrix is an identity matrix");
+    else
+        printf("Matrix is not an identity matrix");
+    
+    return 0;
+}''',
+      output: 'Matrix is an identity matrix',
+    ),
+    
+    ProgramData(
+      name: 'Sparse Matrix Check',
+      description: 'Check if matrix is sparse',
+      code: '''#include <stdio.h>
+
+int main() {
+    int mat[4][4] = {{0, 0, 3, 0}, {0, 0, 5, 0}, {0, 0, 0, 0}, {0, 2, 0, 0}};
+    int zeros = 0, total = 16;
+    
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (mat[i][j] == 0)
+                zeros++;
+        }
+    }
+    
+    if (zeros > total/2)
+        printf("Matrix is sparse (zeros: %d)", zeros);
+    else
+        printf("Matrix is not sparse");
+    
+    return 0;
+}''',
+      output: 'Matrix is sparse (zeros: 13)',
+    ),
+    
+    ProgramData(
+      name: 'Symmetric Matrix Check',
+      description: 'Check if matrix is symmetric',
+      code: '''#include <stdio.h>
+
+int main() {
+    int mat[3][3] = {{1, 2, 3}, {2, 4, 5}, {3, 5, 6}};
+    int isSymmetric = 1;
+    
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (mat[i][j] != mat[j][i]) {
+                isSymmetric = 0;
+                break;
+            }
+        }
+        if (!isSymmetric) break;
+    }
+    
+    if (isSymmetric)
+        printf("Matrix is symmetric");
+    else
+        printf("Matrix is not symmetric");
+    
+    return 0;
+}''',
+      output: 'Matrix is symmetric',
+    ),
+    
+    ProgramData(
+      name: 'Neon Number Check',
+      description: 'Check if number is neon (sum of digits of square equals number)',
+      code: '''#include <stdio.h>
+
+int main() {
+    int num = 9, square, sum = 0, digit;
+    
+    square = num * num;
+    
+    while (square > 0) {
+        digit = square % 10;
+        sum += digit;
+        square /= 10;
+    }
+    
+    if (sum == num)
+        printf("%d is a neon number", num);
+    else
+        printf("%d is not a neon number", num);
+    
+    return 0;
+}''',
+      output: '9 is a neon number',
+    ),
   ];
 }
 

@@ -243,25 +243,53 @@ class _RoadmapDetailScreenState extends State<RoadmapDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...step.topics.map((topic) => Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: Row(
+                  ...step.topics.map((topic) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: widget.roadmap.color.withOpacity(0.3),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.arrow_right,
-                              color: widget.roadmap.color,
-                              size: 20,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.arrow_right,
+                                  color: widget.roadmap.color,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    topic.title,
+                                    style: GoogleFonts.montserrat(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                topic,
-                                style: GoogleFonts.montserrat(
-                                  color: Colors.white,
-                                  fontSize: 13,
+                            if (topic.content.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 28),
+                                child: Text(
+                                  topic.content,
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.grey.shade400,
+                                    fontSize: 12,
+                                    height: 1.4,
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       )),

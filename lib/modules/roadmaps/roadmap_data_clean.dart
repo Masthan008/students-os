@@ -209,7 +209,7 @@ class RoadmapRepository {
             ),
             TopicContent(
               title: 'String methods',
-              content: 'Manipulate strings with methods: length, toUpperCase(), toLowerCase(), slice(), substring(), indexOf(), includes(), split(), replace(), trim(). Template literals: `Hello \${name}`.',
+              content: 'Manipulate strings with methods: length, toUpperCase(), toLowerCase(), slice(), substring(), indexOf(), includes(), split(), replace(), trim(). Template literals: `Hello ${name}`.',
             ),
           ],
           resources: [
@@ -241,7 +241,7 @@ class RoadmapRepository {
             ),
             TopicContent(
               title: 'Template literals',
-              content: 'String interpolation with backticks: `Hello \${name}, you are \${age} years old`. Supports multi-line strings and embedded expressions. Cleaner than string concatenation.',
+              content: 'String interpolation with backticks: `Hello ${name}, you are ${age} years old`. Supports multi-line strings and embedded expressions. Cleaner than string concatenation.',
             ),
             TopicContent(
               title: 'Promises',
@@ -397,7 +397,7 @@ class RoadmapRepository {
           topics: [
             TopicContent(
               title: 'Variables',
-              content: 'Store reusable values: \$primary-color: #3498db; Use throughout stylesheets for consistency. Change once, update everywhere. Compiles to regular CSS.',
+              content: 'Store reusable values: $primary-color: #3498db; Use throughout stylesheets for consistency. Change once, update everywhere. Compiles to regular CSS.',
             ),
             TopicContent(
               title: 'Nesting',
@@ -409,7 +409,7 @@ class RoadmapRepository {
             ),
             TopicContent(
               title: 'Functions',
-              content: 'Return values for calculations: @function calculate-rem(\$px) { @return \$px / 16 * 1rem; }. Built-in functions for colors (darken, lighten), math, and strings.',
+              content: 'Return values for calculations: @function calculate-rem($px) { @return $px / 16 * 1rem; }. Built-in functions for colors (darken, lighten), math, and strings.',
             ),
             TopicContent(
               title: 'Partials and imports',
@@ -846,11 +846,11 @@ class RoadmapRepository {
             ),
             TopicContent(
               title: 'Queries',
-              content: 'find() retrieves documents. Filter with query objects: {age: {\$gt: 18}}. Projection selects fields. sort(), limit(), skip() for pagination.',
+              content: 'find() retrieves documents. Filter with query objects: {age: {$gt: 18}}. Projection selects fields. sort(), limit(), skip() for pagination.',
             ),
             TopicContent(
               title: 'Aggregation',
-              content: 'Pipeline for data processing: \$match, \$group, \$sort, \$project. Powerful for analytics and transformations. Similar to SQL GROUP BY but more flexible.',
+              content: 'Pipeline for data processing: $match, $group, $sort, $project. Powerful for analytics and transformations. Similar to SQL GROUP BY but more flexible.',
             ),
             TopicContent(
               title: 'Indexing',
@@ -903,6 +903,11 @@ class RoadmapRepository {
             TopicContent(
               title: 'API versioning',
               content: 'Maintain backward compatibility while evolving API. URL versioning: /api/v1/users. Header versioning: Accept: application/vnd.api+json;version=1. Semantic versioning for changes.',
+              content: 'Centralized error handling middleware. try/catch for async errors. Custom error classes. Proper status codes and messages. Log errors, don\'t expose internals.',
+            ),
+            TopicContent(
+              title: 'API versioning',
+              content: 'Maintain backward compatibility. URL versioning: /api/v1/users. Header versioning: Accept: application/vnd.api+json;version=1. Deprecation strategy.',
             ),
           ],
           resources: [
@@ -2165,446 +2170,6 @@ class RoadmapRepository {
             'Prometheus Docs',
             'Grafana Tutorials',
             'Elastic Documentation',
-          ],
-        ),
-      ],
-    ),
-
-    // Android Development
-    TechRoadmap(
-      title: 'Android Developer',
-      description: 'Build native Android apps with Kotlin',
-      category: 'Mobile Development',
-      duration: '7-9 months',
-      icon: Icons.android,
-      color: Colors.lightGreen,
-      steps: [
-        RoadmapStep(
-          title: 'Kotlin Basics',
-          description: 'Learn Kotlin programming language',
-          duration: '4-5 weeks',
-          topics: [
-            TopicContent(
-              title: 'Kotlin syntax',
-              content: 'Modern language for Android. Concise syntax, null safety, extension functions. Interoperable with Java. fun main() { println("Hello") }. Statically typed.',
-            ),
-            TopicContent(
-              title: 'Variables and data types',
-              content: 'val for immutable, var for mutable. Types: Int, String, Boolean, Double. Type inference. Nullable types with ?. Safe calls with ?.',
-            ),
-            TopicContent(
-              title: 'Control flow',
-              content: 'if expressions return values. when replaces switch. for loops, while loops. Ranges with .. operator. Smart casts in conditions.',
-            ),
-            TopicContent(
-              title: 'Functions',
-              content: 'fun keyword defines functions. Default parameters, named arguments. Single-expression functions. Extension functions add methods to existing classes.',
-            ),
-            TopicContent(
-              title: 'OOP in Kotlin',
-              content: 'Classes with primary constructor. Data classes for models. Inheritance with open keyword. Interfaces, abstract classes. Object for singletons.',
-            ),
-            TopicContent(
-              title: 'Null safety',
-              content: 'Nullable types prevent NullPointerException. Safe call ?., Elvis operator ?:, not-null assertion !!. let, also, apply, run scope functions.',
-            ),
-            TopicContent(
-              title: 'Collections',
-              content: 'List, Set, Map. Immutable by default. Mutable versions with mutableListOf(). Higher-order functions: map, filter, reduce, forEach.',
-            ),
-            TopicContent(
-              title: 'Lambda expressions',
-              content: 'Anonymous functions: { x -> x * 2 }. Trailing lambda syntax. it for single parameter. Used extensively in Android APIs.',
-            ),
-          ],
-          resources: [
-            'Kotlin Koans',
-            'Kotlin Documentation',
-            'Android Kotlin Fundamentals',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Android Fundamentals',
-          description: 'Core Android concepts',
-          duration: '6-8 weeks',
-          topics: [
-            TopicContent(
-              title: 'Activities and lifecycle',
-              content: 'Activity is single screen. Lifecycle: onCreate, onStart, onResume, onPause, onStop, onDestroy. Handle configuration changes. Save state with onSaveInstanceState.',
-            ),
-            TopicContent(
-              title: 'Fragments',
-              content: 'Reusable UI components within activities. Own lifecycle. FragmentManager handles transactions. Navigation between fragments. Arguments with Bundle.',
-            ),
-            TopicContent(
-              title: 'Intents',
-              content: 'Messaging objects for component communication. Explicit intents for specific components. Implicit intents for actions. Pass data with extras. startActivity, startActivityForResult.',
-            ),
-            TopicContent(
-              title: 'Views and layouts',
-              content: 'XML layouts define UI. LinearLayout, RelativeLayout, ConstraintLayout. View hierarchy. findViewById or view binding. Attributes: layout_width, layout_height, padding, margin.',
-            ),
-            TopicContent(
-              title: 'RecyclerView',
-              content: 'Efficient list display. ViewHolder pattern. Adapter binds data. LayoutManager for positioning. DiffUtil for updates. ItemDecoration for dividers.',
-            ),
-            TopicContent(
-              title: 'Material Design',
-              content: 'Google design system. Material Components library. Themes, colors, typography. Elevation, shadows. Motion and transitions. Bottom sheets, FAB, Snackbar.',
-            ),
-          ],
-          resources: [
-            'Android Developer Guides',
-            'Android Basics Codelabs',
-            'Material Design',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Jetpack Components',
-          description: 'Modern Android architecture',
-          duration: '6-8 weeks',
-          topics: [
-            TopicContent(
-              title: 'ViewModel',
-              content: 'Survives configuration changes. Holds UI data. Separates UI from business logic. ViewModelProvider creates instances. LiveData or StateFlow for reactive data.',
-            ),
-            TopicContent(
-              title: 'LiveData',
-              content: 'Observable data holder. Lifecycle-aware. Updates UI automatically. observe() in Activity/Fragment. MutableLiveData for changes. postValue for background threads.',
-            ),
-            TopicContent(
-              title: 'Room Database',
-              content: 'SQLite abstraction layer. Entity classes with @Entity. DAO interfaces with @Dao. Database class with @Database. Type converters. Migrations.',
-            ),
-            TopicContent(
-              title: 'Navigation Component',
-              content: 'Handle fragment transactions. Navigation graph in XML. Safe Args plugin for type-safe arguments. Deep links. Bottom navigation. Drawer navigation.',
-            ),
-            TopicContent(
-              title: 'WorkManager',
-              content: 'Background tasks that need guaranteed execution. OneTimeWorkRequest, PeriodicWorkRequest. Constraints: network, charging. Chaining work. Observe work status.',
-            ),
-            TopicContent(
-              title: 'Data Binding',
-              content: 'Bind UI components to data sources. Eliminate findViewById. Two-way binding. Binding adapters. Observable fields. Reduces boilerplate code.',
-            ),
-          ],
-          resources: [
-            'Android Jetpack',
-            'Architecture Components',
-            'Modern Android Development',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Networking',
-          description: 'Connect to APIs',
-          duration: '3-4 weeks',
-          topics: [
-            TopicContent(
-              title: 'Retrofit',
-              content: 'Type-safe HTTP client. Define API with interfaces. Annotations: @GET, @POST, @Path, @Query. Gson/Moshi for JSON. Call adapters for RxJava/Coroutines.',
-            ),
-            TopicContent(
-              title: 'OkHttp',
-              content: 'HTTP client library. Interceptors for logging, auth. Connection pooling. Caching. Timeout configuration. Used by Retrofit internally.',
-            ),
-            TopicContent(
-              title: 'Coroutines',
-              content: 'Asynchronous programming. suspend functions. launch, async builders. Dispatchers: Main, IO, Default. withContext for switching. Structured concurrency.',
-            ),
-            TopicContent(
-              title: 'Error handling',
-              content: 'Try-catch for exceptions. Response codes: 200, 404, 500. Network errors, timeouts. Show error messages. Retry logic. Offline handling.',
-            ),
-          ],
-          resources: [
-            'Retrofit Documentation',
-            'Kotlin Coroutines',
-            'Networking Codelab',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Testing & Deployment',
-          description: 'Test and publish apps',
-          duration: '3-4 weeks',
-          topics: [
-            TopicContent(
-              title: 'Unit testing',
-              content: 'JUnit for testing. Test ViewModels, repositories. Mock dependencies with Mockito. Test coroutines with TestCoroutineDispatcher. Assert results.',
-            ),
-            TopicContent(
-              title: 'UI testing',
-              content: 'Espresso for UI tests. Find views, perform actions, verify results. Test RecyclerView, navigation. Idling resources for async. Run on emulator/device.',
-            ),
-            TopicContent(
-              title: 'App signing',
-              content: 'Generate keystore. Sign APK/AAB. Release vs debug keys. Keep keystore secure. Configure in build.gradle. Required for Play Store.',
-            ),
-            TopicContent(
-              title: 'Play Store deployment',
-              content: 'Create developer account. App listing: title, description, screenshots. Upload AAB. Internal testing, closed testing, open testing, production. Release management.',
-            ),
-          ],
-          resources: [
-            'Android Testing',
-            'Play Console Guide',
-            'App Publishing',
-          ],
-        ),
-      ],
-    ),
-
-    // iOS Development
-    TechRoadmap(
-      title: 'iOS Developer',
-      description: 'Build iOS apps with Swift and SwiftUI',
-      category: 'Mobile Development',
-      duration: '7-9 months',
-      icon: Icons.apple,
-      color: Colors.grey,
-      steps: [
-        RoadmapStep(
-          title: 'Swift Basics',
-          description: 'Learn Swift programming',
-          duration: '4-5 weeks',
-          topics: [
-            TopicContent(
-              title: 'Swift syntax',
-              content: 'Modern, safe language for iOS. Type inference, optionals, closures. let for constants, var for variables. Semicolons optional. Playground for experimentation.',
-            ),
-            TopicContent(
-              title: 'Optionals',
-              content: 'Handle absence of value. Optional types with ?. Unwrapping: if let, guard let, optional chaining ?. Nil coalescing ??. Force unwrap ! (use carefully).',
-            ),
-            TopicContent(
-              title: 'Control flow',
-              content: 'if, else, switch statements. for-in loops, while loops. Switch must be exhaustive. Pattern matching in switch. where clauses for conditions.',
-            ),
-            TopicContent(
-              title: 'Functions and closures',
-              content: 'func keyword. Parameters, return types. Default parameters. Closures: { (params) -> ReturnType in code }. Trailing closure syntax. Capture values.',
-            ),
-            TopicContent(
-              title: 'OOP in Swift',
-              content: 'Classes (reference types), structs (value types). Properties: stored, computed. Methods. Inheritance for classes. Initialization. Deinitializers.',
-            ),
-            TopicContent(
-              title: 'Protocols',
-              content: 'Define requirements for types. Protocol-oriented programming. Conformance with :. Extensions add functionality. Protocol extensions provide default implementations.',
-            ),
-            TopicContent(
-              title: 'Generics',
-              content: 'Write flexible, reusable code. Generic functions, types. Type constraints with where. Associated types in protocols. Reduces code duplication.',
-            ),
-          ],
-          resources: [
-            'Swift Documentation',
-            'Swift Playgrounds',
-            '100 Days of Swift',
-          ],
-        ),
-        RoadmapStep(
-          title: 'SwiftUI Basics',
-          description: 'Modern declarative UI',
-          duration: '6-8 weeks',
-          topics: [
-            TopicContent(
-              title: 'Views and modifiers',
-              content: 'Declarative UI framework. Views are structs. Modifiers change appearance: .padding(), .background(), .font(). Chaining modifiers. Order matters.',
-            ),
-            TopicContent(
-              title: 'State management',
-              content: '@State for local state. @Binding for two-way binding. @ObservedObject for external objects. @StateObject for ownership. @EnvironmentObject for shared data.',
-            ),
-            TopicContent(
-              title: 'Lists and navigation',
-              content: 'List for scrollable content. ForEach for dynamic data. NavigationView and NavigationLink. Toolbar, navigation title. Programmatic navigation.',
-            ),
-            TopicContent(
-              title: 'Forms and input',
-              content: 'Form container for input. TextField, SecureField, Toggle, Picker, Stepper. Validation. Keyboard management. Submit button.',
-            ),
-            TopicContent(
-              title: 'Animations',
-              content: 'Implicit animations with .animation(). Explicit with withAnimation {}. Transitions for view changes. Custom animations. Spring, easing curves.',
-            ),
-          ],
-          resources: [
-            'SwiftUI Tutorials',
-            '100 Days of SwiftUI',
-            'SwiftUI by Example',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Data & Networking',
-          description: 'Work with data',
-          duration: '4-5 weeks',
-          topics: [
-            TopicContent(
-              title: 'URLSession',
-              content: 'Make HTTP requests. dataTask for GET. Codable for JSON parsing. async/await for modern syntax. Error handling. Response validation.',
-            ),
-            TopicContent(
-              title: 'Core Data',
-              content: 'Apple persistence framework. Entities, attributes, relationships. NSManagedObject. Fetch requests. Predicates for filtering. Background contexts.',
-            ),
-            TopicContent(
-              title: 'UserDefaults',
-              content: 'Simple key-value storage. Save settings, preferences. set() and object(forKey:). Not for sensitive data. Synchronize automatically.',
-            ),
-            TopicContent(
-              title: 'Keychain',
-              content: 'Secure storage for passwords, tokens. Encrypted by system. KeychainWrapper libraries simplify usage. Survives app deletion.',
-            ),
-          ],
-          resources: [
-            'URLSession Guide',
-            'Core Data Tutorial',
-            'Data Persistence',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Testing & Deployment',
-          description: 'Test and publish',
-          duration: '3-4 weeks',
-          topics: [
-            TopicContent(
-              title: 'XCTest',
-              content: 'Unit testing framework. Test functions, assertions. setUp, tearDown. Async testing with expectations. Mock dependencies. Code coverage.',
-            ),
-            TopicContent(
-              title: 'UI testing',
-              content: 'XCUITest for UI automation. Record interactions. Query UI elements. Tap, swipe, type. Verify element existence. Accessibility identifiers.',
-            ),
-            TopicContent(
-              title: 'TestFlight',
-              content: 'Beta testing platform. Internal testing (100 users). External testing (10,000 users). Collect feedback. Crash reports. Gradual rollout.',
-            ),
-            TopicContent(
-              title: 'App Store deployment',
-              content: 'App Store Connect. Create app listing. Screenshots, description. Submit for review. App Review Guidelines. Release management. Updates.',
-            ),
-          ],
-          resources: [
-            'XCTest Documentation',
-            'TestFlight Guide',
-            'App Store Connect',
-          ],
-        ),
-      ],
-    ),
-
-    // React Native Development
-    TechRoadmap(
-      title: 'React Native Developer',
-      description: 'Build cross-platform mobile apps',
-      category: 'Mobile Development',
-      duration: '6-8 months',
-      icon: Icons.phone_iphone,
-      color: Colors.blueAccent,
-      steps: [
-        RoadmapStep(
-          title: 'React Basics',
-          description: 'Learn React fundamentals',
-          duration: '4-6 weeks',
-          topics: [
-            TopicContent(
-              title: 'Components',
-              content: 'Functional components return JSX. Props pass data. Component composition. Reusable UI pieces. PascalCase naming. Export/import components.',
-            ),
-            TopicContent(
-              title: 'Hooks',
-              content: 'useState for state. useEffect for side effects. useContext for context. useRef for references. useMemo, useCallback for optimization. Custom hooks.',
-            ),
-            TopicContent(
-              title: 'JSX',
-              content: 'JavaScript XML syntax. Expressions in {}. className not class. camelCase attributes. Self-closing tags. Return single parent element.',
-            ),
-          ],
-          resources: [
-            'React Documentation',
-            'React Tutorial',
-            'React Hooks Guide',
-          ],
-        ),
-        RoadmapStep(
-          title: 'React Native Basics',
-          description: 'Mobile development with RN',
-          duration: '4-6 weeks',
-          topics: [
-            TopicContent(
-              title: 'Core components',
-              content: 'View (div), Text, Image, ScrollView, FlatList. TouchableOpacity for buttons. TextInput for forms. Platform-specific components.',
-            ),
-            TopicContent(
-              title: 'Styling',
-              content: 'StyleSheet.create() for styles. Flexbox layout. No CSS units, use numbers. Platform-specific styles. Inline styles. Style composition.',
-            ),
-            TopicContent(
-              title: 'Navigation',
-              content: 'React Navigation library. Stack, Tab, Drawer navigators. Navigate between screens. Pass parameters. Header customization. Deep linking.',
-            ),
-            TopicContent(
-              title: 'State management',
-              content: 'Context API for simple state. Redux for complex apps. Redux Toolkit simplifies setup. Zustand lightweight alternative. Async state with Redux Thunk.',
-            ),
-          ],
-          resources: [
-            'React Native Docs',
-            'React Navigation',
-            'RN Tutorial',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Native Features',
-          description: 'Access device features',
-          duration: '3-4 weeks',
-          topics: [
-            TopicContent(
-              title: 'Camera and media',
-              content: 'react-native-image-picker for photos. Camera access. Video recording. Image manipulation. Permissions handling. Gallery access.',
-            ),
-            TopicContent(
-              title: 'Geolocation',
-              content: '@react-native-community/geolocation. Get current position. Watch position changes. Permissions. Accuracy settings. Background location.',
-            ),
-            TopicContent(
-              title: 'Push notifications',
-              content: 'Firebase Cloud Messaging. Local notifications. Remote notifications. Notification permissions. Handle notification taps. Badge counts.',
-            ),
-            TopicContent(
-              title: 'Storage',
-              content: 'AsyncStorage for key-value. SQLite for structured data. Realm for objects. Secure storage for sensitive data. File system access.',
-            ),
-          ],
-          resources: [
-            'RN Community',
-            'Firebase RN',
-            'Native Modules',
-          ],
-        ),
-        RoadmapStep(
-          title: 'Testing & Deployment',
-          description: 'Test and publish',
-          duration: '3-4 weeks',
-          topics: [
-            TopicContent(
-              title: 'Testing',
-              content: 'Jest for unit tests. React Native Testing Library. Component testing. Mock native modules. Snapshot testing. E2E with Detox.',
-            ),
-            TopicContent(
-              title: 'iOS deployment',
-              content: 'Xcode for building. Certificates and provisioning. TestFlight for beta. App Store submission. Review process. Updates.',
-            ),
-            TopicContent(
-              title: 'Android deployment',
-              content: 'Generate signed APK/AAB. Keystore management. Play Console. Internal testing. Production release. Version management.',
-            ),
-          ],
-          resources: [
-            'Testing Guide',
-            'iOS Deployment',
-            'Android Deployment',
           ],
         ),
       ],

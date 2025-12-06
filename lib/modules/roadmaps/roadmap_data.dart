@@ -2610,6 +2610,1594 @@ class RoadmapRepository {
       ],
     ),
 
+    // Computer Science Fundamentals
+    TechRoadmap(
+      title: 'Computer Science Fundamentals',
+      description: 'Core CS concepts every developer should know',
+      category: 'Computer Science',
+      duration: '6-8 months',
+      icon: Icons.school,
+      color: Colors.teal,
+      steps: [
+        RoadmapStep(
+          title: 'Data Structures',
+          description: 'Essential data structures',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Arrays and Strings',
+              content: 'Contiguous memory storage. Fixed size arrays, dynamic arrays. String manipulation. Time complexity: O(1) access, O(n) search. Common operations: insert, delete, search.',
+            ),
+            TopicContent(
+              title: 'Linked Lists',
+              content: 'Nodes with data and pointers. Singly, doubly, circular linked lists. Dynamic size. O(1) insertion/deletion at head. O(n) search. Useful for queues, stacks.',
+            ),
+            TopicContent(
+              title: 'Stacks and Queues',
+              content: 'Stack: LIFO (Last In First Out). Queue: FIFO (First In First Out). Operations: push, pop, peek. Applications: function calls, BFS, task scheduling.',
+            ),
+            TopicContent(
+              title: 'Trees',
+              content: 'Hierarchical structure. Binary trees, BST, AVL, Red-Black. Root, nodes, leaves. Traversals: inorder, preorder, postorder. Height, depth, balance.',
+            ),
+            TopicContent(
+              title: 'Graphs',
+              content: 'Vertices and edges. Directed, undirected, weighted. Representations: adjacency matrix, adjacency list. Applications: social networks, maps, dependencies.',
+            ),
+            TopicContent(
+              title: 'Hash Tables',
+              content: 'Key-value pairs. Hash function maps keys to indices. O(1) average lookup. Collision handling: chaining, open addressing. Used in dictionaries, caches.',
+            ),
+          ],
+          resources: [
+            'GeeksforGeeks',
+            'Visualgo.net',
+            'Data Structures Course',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Algorithms',
+          description: 'Common algorithms',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Sorting',
+              content: 'Bubble, Selection, Insertion: O(n²). Merge, Quick, Heap: O(n log n). Counting, Radix: O(n). Choose based on data size and constraints.',
+            ),
+            TopicContent(
+              title: 'Searching',
+              content: 'Linear search: O(n). Binary search: O(log n) on sorted data. Depth-First Search (DFS), Breadth-First Search (BFS) for graphs and trees.',
+            ),
+            TopicContent(
+              title: 'Dynamic Programming',
+              content: 'Break problems into subproblems. Memoization (top-down), tabulation (bottom-up). Optimal substructure, overlapping subproblems. Examples: Fibonacci, knapsack, LCS.',
+            ),
+            TopicContent(
+              title: 'Greedy Algorithms',
+              content: 'Make locally optimal choices. Not always globally optimal. Examples: Dijkstra, Huffman coding, activity selection. Faster than DP but limited applicability.',
+            ),
+            TopicContent(
+              title: 'Recursion',
+              content: 'Function calls itself. Base case prevents infinite recursion. Divide and conquer approach. Examples: factorial, tree traversal, backtracking. Can be memory intensive.',
+            ),
+          ],
+          resources: [
+            'LeetCode',
+            'Introduction to Algorithms',
+            'Algorithm Visualizer',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Time & Space Complexity',
+          description: 'Analyze algorithm efficiency',
+          duration: '2-3 weeks',
+          topics: [
+            TopicContent(
+              title: 'Big O Notation',
+              content: 'Describes algorithm growth rate. O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n) linearithmic, O(n²) quadratic, O(2ⁿ) exponential. Focus on worst case.',
+            ),
+            TopicContent(
+              title: 'Time Complexity',
+              content: 'How runtime grows with input size. Count operations, ignore constants. Nested loops multiply complexity. Analyze best, average, worst cases.',
+            ),
+            TopicContent(
+              title: 'Space Complexity',
+              content: 'Memory used by algorithm. Stack space for recursion. Auxiliary space for data structures. Trade-off between time and space.',
+            ),
+          ],
+          resources: [
+            'Big O Cheat Sheet',
+            'Complexity Analysis',
+            'MIT OCW Algorithms',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Operating Systems',
+          description: 'OS fundamentals',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Processes and Threads',
+              content: 'Process: program in execution. Thread: lightweight process. Context switching. Multithreading for concurrency. Process states: new, ready, running, waiting, terminated.',
+            ),
+            TopicContent(
+              title: 'Memory Management',
+              content: 'Virtual memory, paging, segmentation. Stack vs heap. Memory allocation, deallocation. Garbage collection. Memory leaks. Fragmentation.',
+            ),
+            TopicContent(
+              title: 'Synchronization',
+              content: 'Mutex, semaphore, monitors. Critical section problem. Race conditions. Deadlock: mutual exclusion, hold and wait, no preemption, circular wait. Prevention and avoidance.',
+            ),
+          ],
+          resources: [
+            'Operating System Concepts',
+            'OS Course',
+            'Linux Kernel',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Databases',
+          description: 'Database concepts',
+          duration: '4-5 weeks',
+          topics: [
+            TopicContent(
+              title: 'Relational Databases',
+              content: 'Tables with rows and columns. Primary keys, foreign keys. Relationships: one-to-one, one-to-many, many-to-many. SQL for queries. ACID properties.',
+            ),
+            TopicContent(
+              title: 'Normalization',
+              content: '1NF: atomic values. 2NF: no partial dependencies. 3NF: no transitive dependencies. BCNF: stricter 3NF. Reduces redundancy, improves integrity.',
+            ),
+            TopicContent(
+              title: 'Indexing',
+              content: 'Speed up queries. B-tree, hash indexes. Trade-off: faster reads, slower writes. Index frequently queried columns. Composite indexes for multiple columns.',
+            ),
+            TopicContent(
+              title: 'Transactions',
+              content: 'ACID: Atomicity (all or nothing), Consistency (valid state), Isolation (concurrent execution), Durability (permanent). BEGIN, COMMIT, ROLLBACK.',
+            ),
+          ],
+          resources: [
+            'Database Systems',
+            'SQL Tutorial',
+            'Database Design',
+          ],
+        ),
+      ],
+    ),
+
+    // Blockchain Development
+    TechRoadmap(
+      title: 'Blockchain Developer',
+      description: 'Build decentralized applications',
+      category: 'Blockchain',
+      duration: '6-8 months',
+      icon: Icons.currency_bitcoin,
+      color: Colors.amber,
+      steps: [
+        RoadmapStep(
+          title: 'Blockchain Basics',
+          description: 'Understand blockchain technology',
+          duration: '2-3 weeks',
+          topics: [
+            TopicContent(
+              title: 'What is Blockchain?',
+              content: 'Distributed ledger technology. Immutable chain of blocks. Each block contains transactions, timestamp, hash of previous block. Decentralized, transparent, secure.',
+            ),
+            TopicContent(
+              title: 'Consensus Mechanisms',
+              content: 'Proof of Work (Bitcoin): mining, energy intensive. Proof of Stake (Ethereum 2.0): validators, energy efficient. Byzantine Fault Tolerance. Ensures network agreement.',
+            ),
+            TopicContent(
+              title: 'Cryptography',
+              content: 'Hash functions (SHA-256): one-way, deterministic. Public-key cryptography: public and private keys. Digital signatures verify authenticity. Merkle trees for efficient verification.',
+            ),
+            TopicContent(
+              title: 'Bitcoin Basics',
+              content: 'First cryptocurrency. Peer-to-peer electronic cash. UTXO model. Mining rewards. Block time ~10 minutes. Limited supply: 21 million. Satoshi Nakamoto.',
+            ),
+            TopicContent(
+              title: 'Ethereum Basics',
+              content: 'Smart contract platform. Turing-complete. EVM (Ethereum Virtual Machine). Gas for computation. Ether (ETH) cryptocurrency. Vitalik Buterin. Supports dApps.',
+            ),
+          ],
+          resources: [
+            'Bitcoin Whitepaper',
+            'Ethereum Whitepaper',
+            'Blockchain Basics',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Solidity Programming',
+          description: 'Smart contract language',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Solidity Syntax',
+              content: 'Contract-oriented language. pragma solidity version. State variables, functions, modifiers. Visibility: public, private, internal, external. Events for logging.',
+            ),
+            TopicContent(
+              title: 'Data Types',
+              content: 'Value types: uint, int, bool, address, bytes. Reference types: arrays, structs, mappings. String handling. Type conversions. Default values.',
+            ),
+            TopicContent(
+              title: 'Functions and Modifiers',
+              content: 'Function visibility, state mutability (view, pure, payable). Modifiers for access control. Constructor for initialization. Fallback and receive functions.',
+            ),
+            TopicContent(
+              title: 'Smart Contract Patterns',
+              content: 'Access control (Ownable). Pausable contracts. Upgradeable contracts (proxy pattern). Pull over push payments. Checks-Effects-Interactions pattern.',
+            ),
+            TopicContent(
+              title: 'Security',
+              content: 'Reentrancy attacks. Integer overflow/underflow. Front-running. Gas limit issues. Use OpenZeppelin libraries. Audit contracts. Test thoroughly.',
+            ),
+          ],
+          resources: [
+            'Solidity Documentation',
+            'CryptoZombies',
+            'Solidity by Example',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Smart Contracts',
+          description: 'Build and deploy contracts',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'ERC-20 Tokens',
+              content: 'Fungible token standard. totalSupply, balanceOf, transfer, approve, transferFrom. Used for cryptocurrencies, utility tokens. OpenZeppelin implementation.',
+            ),
+            TopicContent(
+              title: 'ERC-721 NFTs',
+              content: 'Non-fungible token standard. Unique tokens. ownerOf, tokenURI, transferFrom. Used for digital art, collectibles, gaming. Metadata standards.',
+            ),
+            TopicContent(
+              title: 'Development Tools',
+              content: 'Hardhat: testing, deployment, debugging. Truffle: development framework. Remix: browser IDE. Ganache: local blockchain. Ethers.js, Web3.js for interaction.',
+            ),
+            TopicContent(
+              title: 'Testing',
+              content: 'Unit tests with Mocha/Chai. Test coverage. Mainnet forking. Gas optimization. Security testing. Automated testing in CI/CD.',
+            ),
+          ],
+          resources: [
+            'Hardhat Documentation',
+            'OpenZeppelin Contracts',
+            'Ethereum Development',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Web3 Development',
+          description: 'Build dApps',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Web3.js / Ethers.js',
+              content: 'JavaScript libraries for Ethereum. Connect to nodes. Send transactions. Read contract state. Call contract functions. Event listeners.',
+            ),
+            TopicContent(
+              title: 'MetaMask Integration',
+              content: 'Browser wallet. Connect dApp to MetaMask. Request accounts. Sign transactions. Switch networks. Handle connection events. User-friendly onboarding.',
+            ),
+            TopicContent(
+              title: 'IPFS',
+              content: 'InterPlanetary File System. Decentralized storage. Content-addressed. Store NFT metadata, images. Pinning services. Alternative to centralized servers.',
+            ),
+            TopicContent(
+              title: 'The Graph',
+              content: 'Indexing protocol for blockchain data. GraphQL queries. Subgraphs for smart contracts. Faster than direct blockchain queries. Real-time data.',
+            ),
+          ],
+          resources: [
+            'Web3.js Docs',
+            'Ethers.js Docs',
+            'dApp University',
+          ],
+        ),
+      ],
+    ),
+
+    // Cybersecurity
+    TechRoadmap(
+      title: 'Cybersecurity Specialist',
+      description: 'Ethical hacking and security',
+      category: 'Security',
+      duration: '10-12 months',
+      icon: Icons.security,
+      color: Colors.red,
+      steps: [
+        RoadmapStep(
+          title: 'Networking Fundamentals',
+          description: 'Understand networks',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'OSI Model',
+              content: '7 layers: Physical, Data Link, Network, Transport, Session, Presentation, Application. Each layer has specific functions. Helps troubleshoot network issues.',
+            ),
+            TopicContent(
+              title: 'TCP/IP',
+              content: 'Internet protocol suite. TCP: reliable, connection-oriented. UDP: fast, connectionless. IP addressing, subnetting. Ports and protocols.',
+            ),
+            TopicContent(
+              title: 'DNS',
+              content: 'Domain Name System. Translates domains to IPs. DNS records: A, AAAA, CNAME, MX, TXT. DNS spoofing, cache poisoning attacks.',
+            ),
+            TopicContent(
+              title: 'Network Devices',
+              content: 'Router: connects networks. Switch: connects devices. Firewall: filters traffic. IDS/IPS: detects/prevents intrusions. VPN: secure tunnels.',
+            ),
+          ],
+          resources: [
+            'CompTIA Network+',
+            'NetworkChuck',
+            'Cisco CCNA',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Linux for Security',
+          description: 'Master Linux',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Command Line',
+              content: 'Navigate filesystem. File operations. Text processing: grep, sed, awk. Process management. Permissions. Shell scripting for automation.',
+            ),
+            TopicContent(
+              title: 'Security Tools',
+              content: 'Kali Linux distribution. Nmap for scanning. Wireshark for packet analysis. Metasploit for exploitation. Burp Suite for web testing.',
+            ),
+            TopicContent(
+              title: 'System Hardening',
+              content: 'Disable unnecessary services. Configure firewall (iptables, ufw). Update regularly. Strong passwords. Audit logs. Principle of least privilege.',
+            ),
+          ],
+          resources: [
+            'Linux Journey',
+            'OverTheWire',
+            'Kali Linux',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Web Security',
+          description: 'Secure web applications',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'OWASP Top 10',
+              content: 'Injection, Broken Auth, Sensitive Data Exposure, XXE, Broken Access Control, Security Misconfiguration, XSS, Insecure Deserialization, Components with Vulnerabilities, Insufficient Logging.',
+            ),
+            TopicContent(
+              title: 'SQL Injection',
+              content: 'Inject malicious SQL. Extract data, bypass auth. Prevention: parameterized queries, input validation, least privilege. Test with sqlmap.',
+            ),
+            TopicContent(
+              title: 'XSS (Cross-Site Scripting)',
+              content: 'Inject malicious scripts. Steal cookies, session hijacking. Types: reflected, stored, DOM-based. Prevention: input sanitization, output encoding, CSP.',
+            ),
+            TopicContent(
+              title: 'CSRF',
+              content: 'Cross-Site Request Forgery. Trick users into unwanted actions. Prevention: CSRF tokens, SameSite cookies, verify origin.',
+            ),
+          ],
+          resources: [
+            'OWASP WebGoat',
+            'PortSwigger Academy',
+            'HackTheBox',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Penetration Testing',
+          description: 'Ethical hacking',
+          duration: '10-12 weeks',
+          topics: [
+            TopicContent(
+              title: 'Reconnaissance',
+              content: 'Information gathering. Passive: OSINT, Google dorking. Active: port scanning, service enumeration. Identify attack surface.',
+            ),
+            TopicContent(
+              title: 'Vulnerability Assessment',
+              content: 'Identify security weaknesses. Automated scanners: Nessus, OpenVAS. Manual testing. CVE databases. Prioritize by severity.',
+            ),
+            TopicContent(
+              title: 'Exploitation',
+              content: 'Leverage vulnerabilities. Metasploit framework. Exploit-DB. Gain access, escalate privileges. Maintain access. Cover tracks.',
+            ),
+            TopicContent(
+              title: 'Report Writing',
+              content: 'Document findings. Executive summary. Technical details. Risk ratings. Remediation recommendations. Clear, actionable reports.',
+            ),
+          ],
+          resources: [
+            'TryHackMe',
+            'HackTheBox',
+            'CEH Course',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Certifications',
+          description: 'Get certified',
+          duration: '8-12 weeks',
+          topics: [
+            TopicContent(
+              title: 'CompTIA Security+',
+              content: 'Entry-level certification. Covers security concepts, threats, cryptography, identity management. Good foundation. Vendor-neutral.',
+            ),
+            TopicContent(
+              title: 'CEH',
+              content: 'Certified Ethical Hacker. Penetration testing methodology. Tools and techniques. Recognized certification. EC-Council.',
+            ),
+            TopicContent(
+              title: 'OSCP',
+              content: 'Offensive Security Certified Professional. Hands-on exam. Prove practical skills. Highly respected. Challenging but rewarding.',
+            ),
+          ],
+          resources: [
+            'CompTIA',
+            'EC-Council',
+            'Offensive Security',
+          ],
+        ),
+      ],
+    ),
+
+    // UI/UX Design
+    TechRoadmap(
+      title: 'UI/UX Designer',
+      description: 'Design beautiful user experiences',
+      category: 'Design',
+      duration: '5-6 months',
+      icon: Icons.design_services,
+      color: Colors.pink,
+      steps: [
+        RoadmapStep(
+          title: 'Design Fundamentals',
+          description: 'Learn design principles',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Color Theory',
+              content: 'Color wheel, complementary, analogous, triadic. Psychology of colors. Contrast, accessibility. Color palettes. Tools: Adobe Color, Coolors.',
+            ),
+            TopicContent(
+              title: 'Typography',
+              content: 'Font families: serif, sans-serif, monospace. Hierarchy with size, weight, spacing. Readability, legibility. Line height, letter spacing. Google Fonts.',
+            ),
+            TopicContent(
+              title: 'Layout and Composition',
+              content: 'Grid systems. Rule of thirds. White space. Balance, alignment, proximity. Visual flow. F-pattern, Z-pattern reading.',
+            ),
+            TopicContent(
+              title: 'Visual Hierarchy',
+              content: 'Guide user attention. Size, color, contrast, position. Most important elements stand out. Clear information architecture.',
+            ),
+          ],
+          resources: [
+            'Refactoring UI',
+            'Design Course',
+            'Material Design',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Design Tools',
+          description: 'Master Figma',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Figma Basics',
+              content: 'Vector design tool. Frames, shapes, text. Layers panel. Boolean operations. Constraints for responsive design. Collaborative, cloud-based.',
+            ),
+            TopicContent(
+              title: 'Components',
+              content: 'Reusable design elements. Master component, instances. Variants for states. Override properties. Design systems. Consistency across designs.',
+            ),
+            TopicContent(
+              title: 'Auto Layout',
+              content: 'Responsive components. Padding, spacing. Horizontal, vertical stacks. Hug, fill, fixed sizing. Nested auto layouts. Saves time.',
+            ),
+            TopicContent(
+              title: 'Prototyping',
+              content: 'Interactive mockups. Connections between frames. Transitions, animations. Smart animate. User testing. Present designs.',
+            ),
+          ],
+          resources: [
+            'Figma Learn',
+            'Figma Community',
+            'YouTube Tutorials',
+          ],
+        ),
+        RoadmapStep(
+          title: 'User Research',
+          description: 'Understand users',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'User Interviews',
+              content: 'One-on-one conversations. Open-ended questions. Understand needs, pain points. Active listening. Record insights. Qualitative data.',
+            ),
+            TopicContent(
+              title: 'Personas',
+              content: 'Fictional user representations. Demographics, goals, behaviors, frustrations. Based on research. Guide design decisions. Empathy building.',
+            ),
+            TopicContent(
+              title: 'User Journey Maps',
+              content: 'Visualize user experience. Touchpoints, actions, emotions. Identify pain points, opportunities. Before, during, after interaction.',
+            ),
+            TopicContent(
+              title: 'Usability Testing',
+              content: 'Observe users completing tasks. Think-aloud protocol. Identify issues. Iterate designs. Remote or in-person. 5 users find 85% of issues.',
+            ),
+          ],
+          resources: [
+            'Nielsen Norman Group',
+            'UX Research Methods',
+            'User Interviews',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Portfolio',
+          description: 'Showcase your work',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Case Studies',
+              content: 'Tell design story. Problem, process, solution, impact. Show research, iterations, final design. Explain decisions. Metrics, results.',
+            ),
+            TopicContent(
+              title: 'Portfolio Website',
+              content: 'Showcase best work. About page. Contact info. Clean, professional design. Fast loading. Mobile responsive. Update regularly.',
+            ),
+            TopicContent(
+              title: 'Behance/Dribbble',
+              content: 'Design community platforms. Share work, get feedback. Follow designers. Inspiration. Networking. Job opportunities.',
+            ),
+          ],
+          resources: [
+            'Behance',
+            'Dribbble',
+            'Portfolio Examples',
+          ],
+        ),
+      ],
+    ),
+
+    // Docker & Kubernetes
+    TechRoadmap(
+      title: 'Docker & Kubernetes',
+      description: 'Container orchestration mastery',
+      category: 'DevOps',
+      duration: '4-6 months',
+      icon: Icons.view_in_ar,
+      color: Colors.blue,
+      steps: [
+        RoadmapStep(
+          title: 'Docker Fundamentals',
+          description: 'Master containerization',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Docker Basics',
+              content: 'Containerization platform. Lightweight, portable, consistent environments. Images are blueprints, containers are running instances. Isolate applications with dependencies.',
+            ),
+            TopicContent(
+              title: 'Dockerfile',
+              content: 'Instructions to build images. FROM base image, COPY files, RUN commands, EXPOSE ports, CMD startup. Layer caching for efficiency. Multi-stage builds reduce size.',
+            ),
+            TopicContent(
+              title: 'Docker Commands',
+              content: 'docker run, build, ps, stop, rm. docker images, pull, push. docker exec for running commands in containers. docker logs for debugging.',
+            ),
+            TopicContent(
+              title: 'Volumes and Networks',
+              content: 'Volumes persist data. Bind mounts, named volumes. Networks connect containers. Bridge, host, overlay networks. Container communication.',
+            ),
+            TopicContent(
+              title: 'Docker Compose',
+              content: 'Define multi-container apps in YAML. Services, networks, volumes. docker-compose up/down. Environment variables. Dependencies between services.',
+            ),
+          ],
+          resources: [
+            'Docker Documentation',
+            'Docker Mastery',
+            'Play with Docker',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Kubernetes Basics',
+          description: 'Container orchestration',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Kubernetes Architecture',
+              content: 'Master node: API server, scheduler, controller manager, etcd. Worker nodes: kubelet, kube-proxy, container runtime. Cluster management.',
+            ),
+            TopicContent(
+              title: 'Pods',
+              content: 'Smallest deployable unit. One or more containers. Shared network, storage. Ephemeral by design. Pod lifecycle: Pending, Running, Succeeded, Failed.',
+            ),
+            TopicContent(
+              title: 'Deployments',
+              content: 'Manage replica sets. Declarative updates. Rolling updates, rollbacks. Scale replicas. Self-healing. Desired state management.',
+            ),
+            TopicContent(
+              title: 'Services',
+              content: 'Expose pods to network. ClusterIP (internal), NodePort (external), LoadBalancer (cloud). Service discovery. Stable endpoints for pods.',
+            ),
+            TopicContent(
+              title: 'ConfigMaps and Secrets',
+              content: 'ConfigMaps for configuration data. Secrets for sensitive data (base64 encoded). Decouple config from images. Environment variables, volume mounts.',
+            ),
+          ],
+          resources: [
+            'Kubernetes Documentation',
+            'Kubernetes Tutorial',
+            'K8s by Example',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Advanced Kubernetes',
+          description: 'Production-ready K8s',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Ingress',
+              content: 'HTTP/HTTPS routing to services. Path-based, host-based routing. TLS termination. Ingress controllers: Nginx, Traefik. External access management.',
+            ),
+            TopicContent(
+              title: 'Persistent Volumes',
+              content: 'Storage abstraction. PersistentVolume (PV), PersistentVolumeClaim (PVC). Storage classes. Dynamic provisioning. StatefulSets for stateful apps.',
+            ),
+            TopicContent(
+              title: 'RBAC',
+              content: 'Role-Based Access Control. Users, service accounts. Roles, ClusterRoles. RoleBindings. Principle of least privilege. Security best practices.',
+            ),
+            TopicContent(
+              title: 'Helm',
+              content: 'Package manager for Kubernetes. Charts define applications. Templates, values. Install, upgrade, rollback. Chart repositories. Simplifies deployments.',
+            ),
+          ],
+          resources: [
+            'Kubernetes Patterns',
+            'Helm Documentation',
+            'Production K8s',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Monitoring & Operations',
+          description: 'Observe and maintain',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Prometheus',
+              content: 'Metrics collection and alerting. Time-series database. PromQL queries. Service discovery. Exporters for metrics. Alertmanager for notifications.',
+            ),
+            TopicContent(
+              title: 'Grafana',
+              content: 'Visualization platform. Dashboards for metrics. Multiple data sources. Alerts. Beautiful graphs. Community dashboards available.',
+            ),
+            TopicContent(
+              title: 'Logging',
+              content: 'Centralized logging. EFK stack: Elasticsearch, Fluentd, Kibana. Log aggregation. Search and analysis. Troubleshooting production issues.',
+            ),
+          ],
+          resources: [
+            'Prometheus Docs',
+            'Grafana Tutorials',
+            'K8s Monitoring',
+          ],
+        ),
+      ],
+    ),
+
+    // PostgreSQL DBA
+    TechRoadmap(
+      title: 'PostgreSQL DBA',
+      description: 'Database administration expert',
+      category: 'Database',
+      duration: '5-7 months',
+      icon: Icons.storage,
+      color: Colors.indigo,
+      steps: [
+        RoadmapStep(
+          title: 'SQL Mastery',
+          description: 'Advanced SQL',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Complex Queries',
+              content: 'Subqueries, CTEs (WITH clause), window functions. PARTITION BY, ROW_NUMBER, RANK. Recursive queries. Query optimization techniques.',
+            ),
+            TopicContent(
+              title: 'Joins',
+              content: 'INNER, LEFT, RIGHT, FULL OUTER joins. CROSS JOIN. Self joins. Join conditions. Performance implications. Index usage.',
+            ),
+            TopicContent(
+              title: 'Aggregations',
+              content: 'GROUP BY, HAVING. Aggregate functions: COUNT, SUM, AVG, MIN, MAX. ROLLUP, CUBE for subtotals. FILTER clause.',
+            ),
+            TopicContent(
+              title: 'Indexes',
+              content: 'B-tree (default), Hash, GiST, GIN, BRIN. Composite indexes. Partial indexes. Index-only scans. When to index. Maintenance.',
+            ),
+          ],
+          resources: [
+            'PostgreSQL Tutorial',
+            'SQL Performance',
+            'Advanced SQL',
+          ],
+        ),
+        RoadmapStep(
+          title: 'PostgreSQL Features',
+          description: 'Postgres-specific',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Data Types',
+              content: 'Numeric, text, date/time, boolean. JSON, JSONB. Arrays. UUID. Custom types. ENUM. Range types. Full-text search types.',
+            ),
+            TopicContent(
+              title: 'Functions and Procedures',
+              content: 'PL/pgSQL language. CREATE FUNCTION. Parameters, return types. Stored procedures. Triggers for automation. Performance benefits.',
+            ),
+            TopicContent(
+              title: 'Views and Materialized Views',
+              content: 'Views: virtual tables. Materialized views: cached results. REFRESH MATERIALIZED VIEW. Use for complex queries. Security through views.',
+            ),
+            TopicContent(
+              title: 'Triggers',
+              content: 'Automatic actions on INSERT, UPDATE, DELETE. BEFORE, AFTER, INSTEAD OF. Row-level, statement-level. Audit logging. Data validation.',
+            ),
+          ],
+          resources: [
+            'PostgreSQL Documentation',
+            'Postgres Guide',
+            'PL/pgSQL Tutorial',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Performance Tuning',
+          description: 'Optimize database',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Query Optimization',
+              content: 'EXPLAIN ANALYZE for query plans. Seq scan vs index scan. Join strategies. Cost estimation. Rewrite queries for efficiency.',
+            ),
+            TopicContent(
+              title: 'Index Strategies',
+              content: 'Choose right index type. Composite index column order. Covering indexes. Partial indexes for filtered data. Monitor index usage.',
+            ),
+            TopicContent(
+              title: 'VACUUM and ANALYZE',
+              content: 'VACUUM reclaims space, prevents transaction ID wraparound. ANALYZE updates statistics. Autovacuum configuration. Regular maintenance essential.',
+            ),
+            TopicContent(
+              title: 'Connection Pooling',
+              content: 'PgBouncer, pgpool-II. Reduce connection overhead. Session vs transaction pooling. Max connections configuration. Performance improvement.',
+            ),
+          ],
+          resources: [
+            'Performance Tuning',
+            'Query Optimization',
+            'Postgres Performance',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Backup & Recovery',
+          description: 'Data protection',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Backup Strategies',
+              content: 'pg_dump for logical backups. pg_basebackup for physical. Continuous archiving with WAL. Incremental backups. Backup scheduling.',
+            ),
+            TopicContent(
+              title: 'Point-in-Time Recovery',
+              content: 'PITR using WAL archives. Restore to specific timestamp. Recovery configuration. Testing recovery procedures. Disaster recovery planning.',
+            ),
+            TopicContent(
+              title: 'Replication',
+              content: 'Streaming replication. Logical replication. Synchronous vs asynchronous. Read replicas. High availability. Failover strategies.',
+            ),
+          ],
+          resources: [
+            'Backup and Recovery',
+            'Replication Guide',
+            'HA PostgreSQL',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Security & Monitoring',
+          description: 'Secure and observe',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Security',
+              content: 'User management. Roles and permissions. Row-level security. SSL connections. pg_hba.conf configuration. Audit logging. Encryption.',
+            ),
+            TopicContent(
+              title: 'Monitoring',
+              content: 'pg_stat views for statistics. Slow query log. Connection monitoring. Disk usage. Lock monitoring. Performance metrics. Alerting.',
+            ),
+          ],
+          resources: [
+            'PostgreSQL Security',
+            'Monitoring Guide',
+            'DBA Best Practices',
+          ],
+        ),
+      ],
+    ),
+
+    // GraphQL Developer
+    TechRoadmap(
+      title: 'GraphQL Developer',
+      description: 'Modern API development',
+      category: 'API',
+      duration: '4-5 months',
+      icon: Icons.api,
+      color: Colors.pink,
+      steps: [
+        RoadmapStep(
+          title: 'GraphQL Basics',
+          description: 'Understand GraphQL',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'What is GraphQL?',
+              content: 'Query language for APIs. Request exactly what you need. Single endpoint. Strongly typed schema. No over-fetching or under-fetching. Alternative to REST.',
+            ),
+            TopicContent(
+              title: 'Queries',
+              content: 'Fetch data. Specify fields to return. Nested queries. Arguments for filtering. Aliases for multiple queries. Fragments for reusable fields.',
+            ),
+            TopicContent(
+              title: 'Mutations',
+              content: 'Modify data. Create, update, delete operations. Return updated data. Input types for complex arguments. Multiple mutations in one request.',
+            ),
+            TopicContent(
+              title: 'Subscriptions',
+              content: 'Real-time updates. WebSocket connection. Subscribe to events. Push data to clients. Use for chat, notifications, live data.',
+            ),
+          ],
+          resources: [
+            'GraphQL Documentation',
+            'How to GraphQL',
+            'GraphQL Tutorial',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Schema Design',
+          description: 'Design GraphQL schemas',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Type System',
+              content: 'Scalar types: Int, Float, String, Boolean, ID. Object types for entities. Enum types. List types. Non-null modifier (!). Custom scalars.',
+            ),
+            TopicContent(
+              title: 'Schema Definition',
+              content: 'Define types, queries, mutations. Root types: Query, Mutation, Subscription. Fields and arguments. Relationships between types. Schema-first approach.',
+            ),
+            TopicContent(
+              title: 'Interfaces and Unions',
+              content: 'Interfaces for shared fields. Unions for multiple types. Polymorphic queries. Type resolution. Flexible schema design.',
+            ),
+          ],
+          resources: [
+            'Schema Design',
+            'GraphQL Best Practices',
+            'Schema Patterns',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Server Implementation',
+          description: 'Build GraphQL servers',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Apollo Server',
+              content: 'Popular GraphQL server. Easy setup. Schema definition. Resolvers for data fetching. Context for auth. Plugins for extensions.',
+            ),
+            TopicContent(
+              title: 'Resolvers',
+              content: 'Functions that fetch data. One resolver per field. Parent, args, context, info parameters. Async operations. Chain resolvers for nested data.',
+            ),
+            TopicContent(
+              title: 'Data Sources',
+              content: 'Connect to databases, REST APIs, microservices. DataLoader for batching. Caching strategies. Error handling. Performance optimization.',
+            ),
+            TopicContent(
+              title: 'Authentication',
+              content: 'JWT tokens in context. Protect resolvers. Role-based access. Field-level permissions. Directive-based auth. Secure sensitive data.',
+            ),
+          ],
+          resources: [
+            'Apollo Server Docs',
+            'GraphQL Server',
+            'Resolver Patterns',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Client Integration',
+          description: 'Use GraphQL in apps',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Apollo Client',
+              content: 'GraphQL client for React. Query, mutation, subscription hooks. Caching. Optimistic UI. Error handling. Pagination.',
+            ),
+            TopicContent(
+              title: 'Queries in React',
+              content: 'useQuery hook. Loading, error, data states. Variables. Polling. Refetch. Cache updates. Lazy queries.',
+            ),
+            TopicContent(
+              title: 'Mutations',
+              content: 'useMutation hook. Update cache after mutation. Optimistic response. Error handling. Refetch queries. Update UI immediately.',
+            ),
+            TopicContent(
+              title: 'Performance',
+              content: 'Query batching. DataLoader for N+1 problem. Persisted queries. Caching strategies. Pagination: offset, cursor-based. Field-level caching.',
+            ),
+          ],
+          resources: [
+            'Apollo Client Docs',
+            'GraphQL Client',
+            'React GraphQL',
+          ],
+        ),
+      ],
+    ),
+
+    // API Design
+    TechRoadmap(
+      title: 'API Design',
+      description: 'Design robust and scalable APIs',
+      category: 'Backend',
+      duration: '4-5 months',
+      icon: Icons.settings_ethernet,
+      color: Colors.deepOrange,
+      steps: [
+        RoadmapStep(
+          title: 'REST API Design',
+          description: 'RESTful principles',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'REST Principles',
+              content: 'Stateless client-server. Uniform interface. Resource-based URLs. HTTP methods. Cacheable responses. Layered system. Self-descriptive messages.',
+            ),
+            TopicContent(
+              title: 'HTTP Methods',
+              content: 'GET: retrieve. POST: create. PUT: update/replace. PATCH: partial update. DELETE: remove. Idempotent methods. Safe methods.',
+            ),
+            TopicContent(
+              title: 'Status Codes',
+              content: '2xx success (200 OK, 201 Created, 204 No Content). 3xx redirection. 4xx client errors (400, 401, 403, 404). 5xx server errors (500, 503).',
+            ),
+            TopicContent(
+              title: 'Resource Naming',
+              content: 'Use nouns, not verbs. Plural names: /users, /posts. Hierarchical: /users/123/posts. Lowercase, hyphens. Consistent naming conventions.',
+            ),
+            TopicContent(
+              title: 'Versioning',
+              content: 'URL versioning: /v1/users. Header versioning: Accept: application/vnd.api.v1+json. Query parameter. Semantic versioning. Deprecation strategy.',
+            ),
+          ],
+          resources: [
+            'REST API Tutorial',
+            'API Design Guide',
+            'Best Practices',
+          ],
+        ),
+        RoadmapStep(
+          title: 'API Best Practices',
+          description: 'Design patterns',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Pagination',
+              content: 'Offset-based: ?page=2&limit=20. Cursor-based for large datasets. Link headers. Total count. Performance considerations.',
+            ),
+            TopicContent(
+              title: 'Filtering and Sorting',
+              content: 'Query parameters: ?status=active&sort=-created_at. Multiple filters. Operators: eq, gt, lt. Validation. Security.',
+            ),
+            TopicContent(
+              title: 'Error Handling',
+              content: 'Consistent error format. Error codes. Descriptive messages. Stack traces in dev only. Validation errors. HTTP status codes.',
+            ),
+            TopicContent(
+              title: 'HATEOAS',
+              content: 'Hypermedia As The Engine Of Application State. Include links in responses. Discoverability. Self-documenting API. Navigation.',
+            ),
+          ],
+          resources: [
+            'API Patterns',
+            'Design Patterns',
+            'API Guidelines',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Security',
+          description: 'Secure your APIs',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Authentication',
+              content: 'JWT tokens. OAuth 2.0. API keys. Basic auth. Bearer tokens. Token refresh. Secure storage.',
+            ),
+            TopicContent(
+              title: 'Authorization',
+              content: 'Role-based access control. Permissions. Resource ownership. Scope-based access. Principle of least privilege.',
+            ),
+            TopicContent(
+              title: 'Rate Limiting',
+              content: 'Prevent abuse. Token bucket algorithm. Rate limit headers. 429 Too Many Requests. Per-user, per-IP limits.',
+            ),
+            TopicContent(
+              title: 'CORS',
+              content: 'Cross-Origin Resource Sharing. Allow specific origins. Preflight requests. Credentials. Security headers.',
+            ),
+          ],
+          resources: [
+            'API Security',
+            'OAuth 2.0 Guide',
+            'Security Best Practices',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Documentation & Testing',
+          description: 'Document and test',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'OpenAPI/Swagger',
+              content: 'API specification format. YAML or JSON. Describe endpoints, parameters, responses. Generate documentation. Client SDKs.',
+            ),
+            TopicContent(
+              title: 'Interactive Docs',
+              content: 'Swagger UI. Try API in browser. Examples. Authentication. Postman collections. Developer experience.',
+            ),
+            TopicContent(
+              title: 'Testing',
+              content: 'Unit tests for endpoints. Integration tests. Contract testing. Load testing. Postman/Newman. Automated testing in CI/CD.',
+            ),
+          ],
+          resources: [
+            'OpenAPI Specification',
+            'Swagger Documentation',
+            'API Testing',
+          ],
+        ),
+      ],
+    ),
+
+    // QA Engineer
+    TechRoadmap(
+      title: 'QA Engineer',
+      description: 'Software testing and quality assurance',
+      category: 'Testing',
+      duration: '5-7 months',
+      icon: Icons.bug_report,
+      color: Colors.brown,
+      steps: [
+        RoadmapStep(
+          title: 'Testing Fundamentals',
+          description: 'Learn testing basics',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Testing Principles',
+              content: 'Testing shows presence of defects, not absence. Exhaustive testing impossible. Early testing saves cost. Defect clustering. Pesticide paradox. Context-dependent testing.',
+            ),
+            TopicContent(
+              title: 'Test Levels',
+              content: 'Unit testing: individual components. Integration testing: combined components. System testing: complete system. Acceptance testing: user requirements. Each level has specific goals.',
+            ),
+            TopicContent(
+              title: 'Test Types',
+              content: 'Functional: features work correctly. Non-functional: performance, security, usability. Regression: changes don\'t break existing features. Smoke testing: basic functionality.',
+            ),
+            TopicContent(
+              title: 'Bug Life Cycle',
+              content: 'New → Assigned → Open → Fixed → Retest → Verified → Closed. Rejected, Deferred, Duplicate states. Priority and severity. Clear reproduction steps.',
+            ),
+          ],
+          resources: [
+            'ISTQB Foundation',
+            'Software Testing Help',
+            'Testing Fundamentals',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Manual Testing',
+          description: 'Master manual testing',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Test Case Design',
+              content: 'Test case ID, description, preconditions, steps, expected results. Positive and negative scenarios. Boundary value analysis. Equivalence partitioning.',
+            ),
+            TopicContent(
+              title: 'Test Execution',
+              content: 'Follow test cases. Document actual results. Log defects. Update test status. Retest fixed bugs. Regression testing after changes.',
+            ),
+            TopicContent(
+              title: 'Exploratory Testing',
+              content: 'Simultaneous learning, test design, execution. Charter-based. Session-based. Find unexpected bugs. Complements scripted testing.',
+            ),
+            TopicContent(
+              title: 'Bug Reporting',
+              content: 'Clear title. Steps to reproduce. Expected vs actual. Screenshots, logs. Environment details. Severity and priority. Jira, Bugzilla.',
+            ),
+          ],
+          resources: [
+            'Manual Testing Guide',
+            'Test Case Writing',
+            'Bug Tracking',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Test Automation',
+          description: 'Automate testing',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Selenium WebDriver',
+              content: 'Automate web browsers. Locators: ID, class, XPath, CSS. WebDriver commands. Waits: implicit, explicit. Page Object Model. Data-driven testing.',
+            ),
+            TopicContent(
+              title: 'Programming for QA',
+              content: 'Python or Java basics. Variables, loops, conditions, functions. OOP concepts. Read/write files. Exception handling. Version control with Git.',
+            ),
+            TopicContent(
+              title: 'Test Frameworks',
+              content: 'TestNG, JUnit for Java. pytest for Python. Annotations, assertions. Test suites. Parallel execution. Reports. Integration with CI/CD.',
+            ),
+            TopicContent(
+              title: 'API Testing',
+              content: 'REST API testing. Postman for manual. REST Assured for automation. Verify status codes, response body, headers. JSON validation.',
+            ),
+          ],
+          resources: [
+            'Selenium Documentation',
+            'Test Automation University',
+            'API Testing Guide',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Performance Testing',
+          description: 'Load and stress testing',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Performance Concepts',
+              content: 'Load testing: expected load. Stress testing: breaking point. Spike testing: sudden load. Endurance testing: sustained load. Response time, throughput, resource utilization.',
+            ),
+            TopicContent(
+              title: 'JMeter',
+              content: 'Open-source load testing tool. Thread groups, samplers, listeners. HTTP requests. Assertions. Timers. Distributed testing. Generate reports.',
+            ),
+            TopicContent(
+              title: 'Performance Metrics',
+              content: 'Response time: how fast. Throughput: requests per second. Error rate: failed requests. Resource usage: CPU, memory. Identify bottlenecks.',
+            ),
+          ],
+          resources: [
+            'JMeter Tutorial',
+            'Performance Testing',
+            'Load Testing Guide',
+          ],
+        ),
+        RoadmapStep(
+          title: 'CI/CD Integration',
+          description: 'Integrate tests in pipeline',
+          duration: '2-3 weeks',
+          topics: [
+            TopicContent(
+              title: 'Jenkins',
+              content: 'Automation server. Create jobs. Trigger on commit. Run tests. Generate reports. Email notifications. Pipeline as code.',
+            ),
+            TopicContent(
+              title: 'GitHub Actions',
+              content: 'CI/CD for GitHub. Workflows in YAML. Run tests on push/PR. Matrix builds. Artifacts. Status badges. Free for public repos.',
+            ),
+            TopicContent(
+              title: 'Test Reports',
+              content: 'HTML reports. Test results dashboard. Pass/fail statistics. Trend analysis. Share with team. Allure, ExtentReports.',
+            ),
+          ],
+          resources: [
+            'Jenkins for QA',
+            'GitHub Actions',
+            'CI/CD Testing',
+          ],
+        ),
+      ],
+    ),
+
+    // Game Developer
+    TechRoadmap(
+      title: 'Game Developer',
+      description: 'Create games with Unity',
+      category: 'Game Development',
+      duration: '8-10 months',
+      icon: Icons.sports_esports,
+      color: Colors.deepPurple,
+      steps: [
+        RoadmapStep(
+          title: 'C# Programming',
+          description: 'Learn C# for Unity',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'C# Basics',
+              content: 'Variables, data types, operators. Control flow: if, switch, loops. Methods, parameters, return values. Classes and objects. Namespaces.',
+            ),
+            TopicContent(
+              title: 'OOP in C#',
+              content: 'Classes, objects, inheritance. Encapsulation, polymorphism. Interfaces, abstract classes. Properties, constructors. Access modifiers.',
+            ),
+            TopicContent(
+              title: 'Collections',
+              content: 'Arrays, Lists, Dictionaries. LINQ for queries. Iteration. Add, remove, search. Generic collections. Performance considerations.',
+            ),
+            TopicContent(
+              title: 'Events and Delegates',
+              content: 'Delegates: type-safe function pointers. Events for notifications. Subscribe, unsubscribe. Observer pattern. Used extensively in Unity.',
+            ),
+          ],
+          resources: [
+            'C# Documentation',
+            'Unity Learn',
+            'C# for Unity',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Unity Basics',
+          description: 'Learn Unity engine',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Unity Interface',
+              content: 'Scene view, Game view, Hierarchy, Inspector, Project, Console. Navigation. Play mode. Layouts. Shortcuts for efficiency.',
+            ),
+            TopicContent(
+              title: 'GameObjects and Components',
+              content: 'Everything is a GameObject. Components add functionality. Transform, Renderer, Collider. Add/remove components. GetComponent<>(). Component-based architecture.',
+            ),
+            TopicContent(
+              title: 'Prefabs',
+              content: 'Reusable GameObject templates. Instantiate at runtime. Prefab variants. Override properties. Nested prefabs. Efficient asset management.',
+            ),
+            TopicContent(
+              title: 'Scenes',
+              content: 'Containers for game content. Multiple scenes. Load scenes. Additive loading. Scene management. DontDestroyOnLoad for persistence.',
+            ),
+            TopicContent(
+              title: 'Physics',
+              content: 'Rigidbody for physics. Colliders for collision. Triggers for detection. Forces, velocity. Raycasting. Physics materials. 2D and 3D physics.',
+            ),
+          ],
+          resources: [
+            'Unity Documentation',
+            'Unity Tutorials',
+            'Brackeys YouTube',
+          ],
+        ),
+        RoadmapStep(
+          title: '2D Game Development',
+          description: 'Create 2D games',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Sprites',
+              content: '2D graphics. Sprite Renderer component. Sprite sheets. Animation. Sorting layers. Pixel perfect camera. Import settings.',
+            ),
+            TopicContent(
+              title: '2D Physics',
+              content: 'Rigidbody2D, Collider2D. Box, Circle, Polygon colliders. Triggers. Layers for collision matrix. Effectors: area, platform, surface.',
+            ),
+            TopicContent(
+              title: 'Tilemaps',
+              content: 'Grid-based levels. Tilemap component. Tile Palette. Paint tiles. Rule tiles. Collision. Efficient for platformers, RPGs.',
+            ),
+            TopicContent(
+              title: 'Animation',
+              content: 'Animator component. Animation clips. State machines. Transitions, parameters. Blend trees. Timeline for cutscenes.',
+            ),
+          ],
+          resources: [
+            'Unity 2D Tutorial',
+            '2D Game Kit',
+            'Pixel Art Course',
+          ],
+        ),
+        RoadmapStep(
+          title: '3D Game Development',
+          description: 'Build 3D games',
+          duration: '8-10 weeks',
+          topics: [
+            TopicContent(
+              title: '3D Models',
+              content: 'Import FBX, OBJ. Materials, textures. Shaders. LOD (Level of Detail). Mesh Renderer. Skinned Mesh for characters.',
+            ),
+            TopicContent(
+              title: 'Lighting',
+              content: 'Directional, Point, Spot lights. Baked vs realtime. Light probes. Reflection probes. Global Illumination. Shadows.',
+            ),
+            TopicContent(
+              title: 'Camera Control',
+              content: 'Camera component. Perspective vs orthographic. Field of view. Cinemachine for advanced camera. Follow player. Smooth movement.',
+            ),
+            TopicContent(
+              title: 'Terrain',
+              content: 'Terrain tools. Height maps. Textures, trees, grass. Detail meshes. Terrain collider. Large outdoor environments.',
+            ),
+          ],
+          resources: [
+            'Unity 3D Tutorial',
+            '3D Game Kit',
+            'Blender Basics',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Game Design & Polish',
+          description: 'Complete your game',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'UI Design',
+              content: 'Canvas, UI elements. Buttons, text, images. Anchors, pivots. Event system. Menus, HUD. Responsive design. TextMeshPro.',
+            ),
+            TopicContent(
+              title: 'Audio',
+              content: 'Audio Source, Audio Listener. Sound effects, music. 3D audio. Audio Mixer. Volume control. Background music loops.',
+            ),
+            TopicContent(
+              title: 'Particle Systems',
+              content: 'Visual effects. Emission, shape, color, size over lifetime. Explosions, fire, smoke. Trails. Optimize particle count.',
+            ),
+            TopicContent(
+              title: 'Build and Deploy',
+              content: 'Build settings. Platform-specific builds. PC, mobile, web. Player settings. Optimization. Publishing to Steam, Play Store, App Store.',
+            ),
+          ],
+          resources: [
+            'Unity UI',
+            'Game Audio',
+            'Publishing Guide',
+          ],
+        ),
+      ],
+    ),
+
+    // MLOps Engineer
+    TechRoadmap(
+      title: 'MLOps Engineer',
+      description: 'Deploy and maintain ML systems',
+      category: 'AI/ML',
+      duration: '6-8 months',
+      icon: Icons.precision_manufacturing,
+      color: Colors.teal,
+      steps: [
+        RoadmapStep(
+          title: 'ML Fundamentals',
+          description: 'Understand machine learning',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'ML Basics',
+              content: 'Supervised, unsupervised, reinforcement learning. Training, validation, test sets. Overfitting, underfitting. Model evaluation metrics.',
+            ),
+            TopicContent(
+              title: 'Python for ML',
+              content: 'NumPy, Pandas for data. Scikit-learn for ML. TensorFlow, PyTorch for deep learning. Jupyter notebooks. Data preprocessing.',
+            ),
+            TopicContent(
+              title: 'Model Training',
+              content: 'Data preparation. Feature engineering. Train models. Hyperparameter tuning. Cross-validation. Save trained models.',
+            ),
+          ],
+          resources: [
+            'ML Crash Course',
+            'Scikit-learn Docs',
+            'ML Basics',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Model Deployment',
+          description: 'Deploy ML models',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Model Serving',
+              content: 'REST APIs with Flask, FastAPI. Model serialization: pickle, joblib, ONNX. Request/response format. Batch vs real-time inference.',
+            ),
+            TopicContent(
+              title: 'Containerization',
+              content: 'Docker for ML models. Dockerfile with dependencies. Docker Compose for services. Consistent environments. Easy deployment.',
+            ),
+            TopicContent(
+              title: 'Cloud Deployment',
+              content: 'AWS SageMaker, Google AI Platform, Azure ML. Managed services. Scalability. Monitoring. Cost optimization.',
+            ),
+            TopicContent(
+              title: 'Model Versioning',
+              content: 'Track model versions. MLflow for experiments. Model registry. A/B testing. Rollback capability. Reproducibility.',
+            ),
+          ],
+          resources: [
+            'MLOps Guide',
+            'Model Deployment',
+            'MLflow Docs',
+          ],
+        ),
+        RoadmapStep(
+          title: 'ML Pipelines',
+          description: 'Automate ML workflows',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Data Pipelines',
+              content: 'ETL processes. Data validation. Feature stores. Airflow for orchestration. Scheduled data updates. Data quality checks.',
+            ),
+            TopicContent(
+              title: 'Training Pipelines',
+              content: 'Automated retraining. Trigger on data drift. Hyperparameter optimization. Distributed training. Pipeline orchestration.',
+            ),
+            TopicContent(
+              title: 'CI/CD for ML',
+              content: 'Automated testing. Model validation. Deployment automation. GitHub Actions, Jenkins. Continuous training. Version control.',
+            ),
+          ],
+          resources: [
+            'ML Pipelines',
+            'Airflow Tutorial',
+            'CI/CD for ML',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Monitoring & Maintenance',
+          description: 'Monitor ML systems',
+          duration: '3-4 weeks',
+          topics: [
+            TopicContent(
+              title: 'Model Monitoring',
+              content: 'Track predictions. Performance metrics. Data drift detection. Model degradation. Alerts for issues. Logging predictions.',
+            ),
+            TopicContent(
+              title: 'Performance Optimization',
+              content: 'Model compression. Quantization. Pruning. Inference optimization. GPU utilization. Latency reduction. Cost optimization.',
+            ),
+            TopicContent(
+              title: 'Retraining Strategy',
+              content: 'When to retrain. Automated vs manual. Incremental learning. Active learning. Feedback loops. Model updates.',
+            ),
+          ],
+          resources: [
+            'ML Monitoring',
+            'Model Optimization',
+            'MLOps Best Practices',
+          ],
+        ),
+      ],
+    ),
+
+    // Software Architect
+    TechRoadmap(
+      title: 'Software Architect',
+      description: 'Design scalable software systems',
+      category: 'Architecture',
+      duration: '8-12 months',
+      icon: Icons.architecture,
+      color: Colors.blueGrey,
+      steps: [
+        RoadmapStep(
+          title: 'Architecture Fundamentals',
+          description: 'Core concepts',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Architecture Patterns',
+              content: 'Layered, microservices, event-driven, serverless. Monolithic vs distributed. Choose based on requirements. Trade-offs of each pattern.',
+            ),
+            TopicContent(
+              title: 'Design Principles',
+              content: 'SOLID principles. DRY (Don\'t Repeat Yourself). KISS (Keep It Simple). YAGNI (You Aren\'t Gonna Need It). Separation of concerns.',
+            ),
+            TopicContent(
+              title: 'System Design',
+              content: 'Requirements analysis. Functional vs non-functional. Capacity planning. Technology selection. Architecture documentation.',
+            ),
+          ],
+          resources: [
+            'System Design Primer',
+            'Architecture Patterns',
+            'Design Principles',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Scalability & Performance',
+          description: 'Build scalable systems',
+          duration: '6-8 weeks',
+          topics: [
+            TopicContent(
+              title: 'Horizontal Scaling',
+              content: 'Add more servers. Load balancing. Stateless services. Session management. Database replication. Distributed systems.',
+            ),
+            TopicContent(
+              title: 'Caching Strategies',
+              content: 'Cache-aside, write-through, write-behind. Redis, Memcached. CDN for static assets. Database query caching. Cache invalidation.',
+            ),
+            TopicContent(
+              title: 'Database Optimization',
+              content: 'Indexing strategies. Query optimization. Sharding. Replication. Read replicas. Connection pooling. NoSQL for specific use cases.',
+            ),
+            TopicContent(
+              title: 'Microservices',
+              content: 'Service decomposition. API gateway. Service discovery. Inter-service communication. Data consistency. Distributed tracing.',
+            ),
+          ],
+          resources: [
+            'Scalability Guide',
+            'Microservices Patterns',
+            'System Design Interview',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Security & Reliability',
+          description: 'Secure and reliable systems',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Security Architecture',
+              content: 'Defense in depth. Authentication, authorization. Encryption at rest and in transit. API security. OWASP Top 10. Security audits.',
+            ),
+            TopicContent(
+              title: 'High Availability',
+              content: 'Redundancy. Failover mechanisms. Health checks. Circuit breakers. Graceful degradation. SLA targets. Disaster recovery.',
+            ),
+            TopicContent(
+              title: 'Monitoring & Observability',
+              content: 'Metrics, logs, traces. Prometheus, Grafana. ELK stack. Distributed tracing. Alerting. Incident response. Post-mortems.',
+            ),
+          ],
+          resources: [
+            'Security Architecture',
+            'Site Reliability Engineering',
+            'Observability Guide',
+          ],
+        ),
+        RoadmapStep(
+          title: 'Communication & Leadership',
+          description: 'Lead technical teams',
+          duration: '4-6 weeks',
+          topics: [
+            TopicContent(
+              title: 'Architecture Documentation',
+              content: 'C4 model diagrams. Architecture Decision Records (ADRs). Technical specifications. API documentation. Runbooks.',
+            ),
+            TopicContent(
+              title: 'Stakeholder Management',
+              content: 'Communicate with non-technical stakeholders. Present architecture decisions. Cost-benefit analysis. Risk assessment. Alignment with business goals.',
+            ),
+            TopicContent(
+              title: 'Technical Leadership',
+              content: 'Mentor developers. Code reviews. Set technical direction. Foster innovation. Balance technical debt. Build consensus.',
+            ),
+          ],
+          resources: [
+            'Architecture Documentation',
+            'Technical Leadership',
+            'Communication Skills',
+          ],
+        ),
+      ],
+    ),
+
   ];
 }
 

@@ -528,20 +528,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Content
               SafeArea(
-                child: _screens[_currentIndex],
+                bottom: false, // We'll handle bottom padding manually
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 110), // Space for floating nav
+                  child: _screens[_currentIndex],
+                ),
               ),
 
-              // Glass Bottom Nav
-              GlassBottomNav(
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  accessibilityProvider.provideFeedback(
-                    text: 'Switched to ${_getScreenName(index)}',
-                  );
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
+              // Glass Bottom Nav - Positioned at bottom
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: GlassBottomNav(
+                  currentIndex: _currentIndex,
+                  onTap: (index) {
+                    accessibilityProvider.provideFeedback(
+                      text: 'Switched to ${_getScreenName(index)}',
+                    );
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
+                ),
               ),
             ],
           ),

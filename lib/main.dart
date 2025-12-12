@@ -14,6 +14,10 @@ import 'modules/calculator/calculator_provider.dart';
 import 'modules/alarm/alarm_provider.dart';
 import 'modules/alarm/alarm_service.dart';
 import 'providers/focus_provider.dart';
+import 'providers/theme_provider.dart';
+import 'providers/accessibility_provider.dart';
+import 'providers/dashboard_provider.dart';
+import 'providers/notification_provider.dart';
 import 'models/class_session.dart';
 import 'models/attendance_record.dart';
 import 'services/timetable_service.dart';
@@ -113,6 +117,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AccessibilityProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => CalculatorProvider()),
         ChangeNotifierProvider(create: (_) => AlarmProvider()),
         ChangeNotifierProvider(create: (_) => FocusProvider()),
@@ -149,12 +157,16 @@ class _FluxFlowAppState extends State<FluxFlowApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FluxFlow',
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const SplashScreen(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'FluxFlow',
+          navigatorKey: navigatorKey,
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.getCurrentTheme(),
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

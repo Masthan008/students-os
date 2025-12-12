@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -17,6 +18,38 @@ class AlarmScreen extends StatefulWidget {
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
+  late Timer _clockTimer;
+  String _currentTime = '';
+  String _currentDate = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _updateTime();
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updateTime();
+    });
+  }
+
+  @override
+  void dispose() {
+    _clockTimer.cancel();
+    super.dispose();
+  }
+
+  void _updateTime() {
+    final now = DateTime.now();
+    final userPrefs = Hive.box('user_prefs');
+    final use24h = userPrefs.get('use24h', defaultValue: false);
+    
+    setState(() {
+      _currentTime = use24h 
+          ? DateFormat('HH:mm:ss').format(now)
+          : DateFormat('h:mm:ss a').format(now);
+      _currentDate = DateFormat('EEEE, MMMM d, y').format(now);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AlarmProvider>(context);
@@ -66,9 +99,52 @@ class _AlarmScreenState extends State<AlarmScreen> {
       ),
       body: Column(
         children: [
+          // Real-Time Clock Display
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.deepPurpleAccent.withOpacity(0.3),
+                  Colors.cyanAccent.withOpacity(0.2),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.cyanAccent.withOpacity(0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  _currentTime,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _currentDate,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2, end: 0),
+          
           // Do Not Disturb Warning
           Container(
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.orange.withOpacity(0.2),
@@ -191,7 +267,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   void _setPowerNap(BuildContext context, AlarmProvider provider) async {
     final napTime = DateTime.now().add(const Duration(minutes: 20));
-    final timeFormat = DateFormat('h:mm a');
     
     // Generate unique ID to avoid conflicts - use larger range
     final uniqueId = DateTime.now().millisecondsSinceEpoch % 1000000;
@@ -204,7 +279,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       alarmId: uniqueId,
     );
     
-    // Silent alarm set
+    // No snackbar - silent alarm set
   }
 
   void _showEditAlarmDialog(BuildContext context, AlarmSettings alarm) {
@@ -542,12 +617,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     TextButton(
                       onPressed: () {
                         provider.clearHistory();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('History cleared'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
                       },
                       child: const Text(
                         'Clear All',

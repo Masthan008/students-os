@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart';
+import '../providers/accessibility_provider.dart';
 import '../widgets/glass_bottom_nav.dart';
+import '../widgets/accessibility_wrapper.dart';
 import '../modules/calculator/calculator_screen.dart';
 import '../modules/alarm/alarm_screen.dart';
 import '../modules/games/game_2048_screen.dart';
@@ -82,32 +86,36 @@ class _HomeScreenState extends State<HomeScreen> {
     final userName = box.get('user_name', defaultValue: 'Student');
     final userPhoto = box.get('user_photo');
     
-    return Scaffold(
-      extendBody: true, // Important for floating nav bar
-        drawer: Drawer(
+    return Consumer2<ThemeProvider, AccessibilityProvider>(
+      builder: (context, themeProvider, accessibilityProvider, child) {
+        return Scaffold(
+          extendBody: true, // Important for floating nav bar
+          drawer: Drawer(
         backgroundColor: Colors.black.withOpacity(0.9),
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.grey.shade900,
+                gradient: LinearGradient(
+                  colors: themeProvider.getCurrentGradientColors().take(2).toList(),
+                ),
               ),
-              child: const Text(
-                'NovaMind OS',
-                style: TextStyle(
-                  color: Colors.cyanAccent,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+              child: AccessibilityWrapper(
+                semanticLabel: 'FluxFlow app drawer header',
+                child: Text(
+                  'FluxFlow OS',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: themeProvider.fontFamily,
+                  ),
                 ),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.calculate, color: Colors.cyanAccent),
-              title: const Text(
-                'Calculator',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
+            AccessibilityWrapper(
+              semanticLabel: 'Calculator app',
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -117,6 +125,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
+              child: ListTile(
+                leading: Icon(Icons.calculate, color: themeProvider.getCurrentPrimaryColor()),
+                title: Text(
+                  'Calculator',
+                  style: TextStyle(
+                    color: Colors.white, 
+                    fontSize: themeProvider.fontSize,
+                    fontFamily: themeProvider.fontFamily,
+                  ),
+                ),
+                onTap: () {
+                  accessibilityProvider.provideFeedback(text: 'Opening Calculator');
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CalculatorScreen(),
+                    ),
+                  );
+                },
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.bedtime, color: Colors.purpleAccent),
@@ -480,32 +509,55 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          // Animated Background
-          Container(
-            decoration: AppTheme.backgroundDecoration,
-          )
-          .animate(onPlay: (controller) => controller.repeat(reverse: true))
-          .shimmer(duration: 10.seconds, color: Colors.purple.withOpacity(0.3))
-          .saturate(duration: 10.seconds, begin: 0.8, end: 1.2),
+          body: Stack(
+            children: [
+              // Enhanced Animated Background
+              Container(
+                decoration: themeProvider.getCurrentBackgroundDecoration(),
+              )
+              .animate(onPlay: (controller) => controller.repeat(reverse: true))
+              .shimmer(
+                duration: accessibilityProvider.getAnimationDuration(const Duration(seconds: 10)),
+                color: themeProvider.getCurrentPrimaryColor().withOpacity(0.3),
+              )
+              .saturate(
+                duration: accessibilityProvider.getAnimationDuration(const Duration(seconds: 10)),
+                begin: 0.8, 
+                end: 1.2,
+              ),
 
-          // Content
-          SafeArea(
-            child: _screens[_currentIndex],
-          ),
+              // Content
+              SafeArea(
+                child: _screens[_currentIndex],
+              ),
 
-          // Glass Bottom Nav
-          GlassBottomNav(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
+              // Glass Bottom Nav
+              GlassBottomNav(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  accessibilityProvider.provideFeedback(
+                    text: 'Switched to ${_getScreenName(index)}',
+                  );
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  String _getScreenName(int index) {
+    switch (index) {
+      case 0: return 'Timetable';
+      case 1: return 'Alarm';
+      case 2: return 'Calendar';
+      case 3: return 'Attendance';
+      case 4: return 'Chat';
+      default: return 'Screen';
+    }
   }
 }

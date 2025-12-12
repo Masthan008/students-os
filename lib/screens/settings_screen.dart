@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import '../services/battery_service.dart';
 import '../services/auth_service.dart';
+import '../providers/theme_provider.dart';
+import '../providers/accessibility_provider.dart';
+import 'settings/main_settings_screen.dart';
 import 'auth_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -198,322 +202,379 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final userName = userPrefs.get('user_name', defaultValue: 'Student');
     final userPhoto = userPrefs.get('user_photo');
     
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: Colors.grey.shade900,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.grey.shade900,
-              Colors.black,
-            ],
-          ),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Profile Card
-            Card(
-              color: Colors.grey.shade900,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: _editProfile,
-                      child: Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.cyanAccent,
-                            backgroundImage: userPhoto != null 
-                              ? FileImage(File(userPhoto)) 
-                              : null,
-                            child: userPhoto == null 
-                              ? const Icon(Icons.person, size: 50, color: Colors.black)
-                              : null,
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.cyanAccent,
-                                shape: BoxShape.circle,
+    return Consumer2<ThemeProvider, AccessibilityProvider>(
+      builder: (context, themeProvider, accessibilityProvider, child) {
+        return Container(
+          decoration: themeProvider.getCurrentBackgroundDecoration(),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: const Text('Settings'),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                // Profile Card
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            accessibilityProvider.provideFeedback(text: 'Edit profile photo');
+                            _editProfile();
+                          },
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundColor: themeProvider.getCurrentPrimaryColor(),
+                                backgroundImage: userPhoto != null 
+                                  ? FileImage(File(userPhoto)) 
+                                  : null,
+                                child: userPhoto == null 
+                                  ? const Icon(Icons.person, size: 50, color: Colors.white)
+                                  : null,
                               ),
-                              child: const Icon(
-                                Icons.camera_alt,
-                                size: 20,
-                                color: Colors.black,
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: themeProvider.getCurrentPrimaryColor(),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          userName,
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            accessibilityProvider.provideFeedback(text: 'Edit name');
+                            _editName();
+                          },
+                          icon: Icon(Icons.edit, color: themeProvider.getCurrentPrimaryColor()),
+                          label: Text(
+                            'Edit Name',
+                            style: TextStyle(color: themeProvider.getCurrentPrimaryColor()),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      userName,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Enhanced Settings Button
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: ListTile(
+                    leading: Icon(Icons.palette, color: themeProvider.getCurrentPrimaryColor()),
+                    title: Text(
+                      'Enhanced Settings',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextButton.icon(
-                      onPressed: _editName,
-                      icon: const Icon(Icons.edit, color: Colors.cyanAccent),
-                      label: const Text(
-                        'Edit Name',
-                        style: TextStyle(color: Colors.cyanAccent),
-                      ),
+                    subtitle: const Text(
+                      'Themes, Accessibility, Dashboard & More',
+                      style: TextStyle(color: Colors.white70),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Settings Section
-            const Text(
-              'App Settings',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.cyanAccent,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Power Saver Mode
-            Card(
-              color: Colors.grey.shade900,
-              child: SwitchListTile(
-                title: const Text(
-                  'Power Saver Mode',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                subtitle: const Text(
-                  'Disable animations to save battery',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                value: _powerSaverMode,
-                onChanged: _togglePowerSaver,
-                activeColor: Colors.green,
-                secondary: Icon(
-                  _powerSaverMode ? Icons.battery_saver : Icons.battery_full,
-                  color: _powerSaverMode ? Colors.green : Colors.grey,
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Battery Optimization
-            Card(
-              color: Colors.grey.shade900,
-              child: ListTile(
-                leading: Icon(
-                  _batteryOptimizationDisabled 
-                    ? Icons.battery_charging_full 
-                    : Icons.battery_alert,
-                  color: _batteryOptimizationDisabled ? Colors.green : Colors.orange,
-                ),
-                title: const Text(
-                  'Allow Background Running',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                subtitle: Text(
-                  _batteryOptimizationDisabled 
-                    ? 'Enabled - Alarms will work reliably' 
-                    : 'Disabled - May affect alarm reliability',
-                  style: TextStyle(
-                    color: _batteryOptimizationDisabled ? Colors.green : Colors.orange,
-                  ),
-                ),
-                trailing: ElevatedButton(
-                  onPressed: _batteryOptimizationDisabled 
-                    ? null 
-                    : _requestBatteryOptimization,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  child: Text(_batteryOptimizationDisabled ? 'Enabled' : 'Enable'),
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Biometric Lock
-            Card(
-              color: Colors.grey.shade900,
-              child: SwitchListTile(
-                title: const Text(
-                  'Biometric Lock',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                subtitle: const Text(
-                  'Require fingerprint on startup',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                value: _biometricLock,
-                onChanged: _toggleBiometric,
-                activeColor: Colors.cyanAccent,
-                secondary: Icon(
-                  Icons.fingerprint,
-                  color: _biometricLock ? Colors.cyanAccent : Colors.grey,
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // System Settings Button
-            Card(
-              color: Colors.grey.shade900,
-              child: ListTile(
-                leading: const Icon(Icons.settings, color: Colors.cyanAccent),
-                title: const Text(
-                  'System Settings',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                subtitle: const Text(
-                  'Open Android app settings',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-                onTap: () async {
-                  await openAppSettings();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.cyanAccent,
-                      content: Text(
-                        'Opening system settings...',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                },
-              ),
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // 24-Hour Format Toggle
-            ValueListenableBuilder(
-              valueListenable: Hive.box('user_prefs').listenable(),
-              builder: (context, Box box, _) {
-                final use24h = box.get('use24h', defaultValue: false);
-                return Card(
-                  color: Colors.grey.shade900,
-                  child: SwitchListTile(
-                    title: const Text(
-                      'Use 24-Hour Format',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    subtitle: Text(
-                      use24h ? 'Time shown as 14:30' : 'Time shown as 2:30 PM',
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    value: use24h,
-                    onChanged: (value) async {
-                      await box.put('use24h', value);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.cyanAccent,
-                          content: Text(
-                            value ? '24-hour format enabled' : '12-hour format enabled',
-                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                          ),
-                          behavior: SnackBarBehavior.floating,
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white70),
+                    onTap: () {
+                      accessibilityProvider.provideFeedback(text: 'Opening enhanced settings');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainSettingsScreen(),
                         ),
                       );
                     },
-                    activeColor: Colors.cyanAccent,
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Legacy Settings Section
+                Text(
+                  'System Settings',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Power Saver Mode
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: SwitchListTile(
+                    title: Text(
+                      'Power Saver Mode',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    ),
+                    subtitle: const Text(
+                      'Disable animations to save battery',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    value: _powerSaverMode,
+                    onChanged: (value) {
+                      accessibilityProvider.provideFeedback(
+                        text: value ? 'Power saver enabled' : 'Power saver disabled',
+                      );
+                      _togglePowerSaver(value);
+                    },
+                    activeColor: Colors.green,
                     secondary: Icon(
-                      Icons.access_time,
-                      color: use24h ? Colors.cyanAccent : Colors.grey,
+                      _powerSaverMode ? Icons.battery_saver : Icons.battery_full,
+                      color: _powerSaverMode ? Colors.green : Colors.white70,
                     ),
                   ),
-                );
-              },
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Battery Optimization
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: ListTile(
+                    leading: Icon(
+                      _batteryOptimizationDisabled 
+                        ? Icons.battery_charging_full 
+                        : Icons.battery_alert,
+                      color: _batteryOptimizationDisabled ? Colors.green : Colors.orange,
+                    ),
+                    title: Text(
+                      'Allow Background Running',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      _batteryOptimizationDisabled 
+                        ? 'Enabled - Alarms will work reliably' 
+                        : 'Disabled - May affect alarm reliability',
+                      style: TextStyle(
+                        color: _batteryOptimizationDisabled ? Colors.green : Colors.orange,
+                      ),
+                    ),
+                    trailing: ElevatedButton(
+                      onPressed: _batteryOptimizationDisabled 
+                        ? null 
+                        : () {
+                            accessibilityProvider.provideFeedback(text: 'Requesting battery optimization');
+                            _requestBatteryOptimization();
+                          },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      child: Text(_batteryOptimizationDisabled ? 'Enabled' : 'Enable'),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Biometric Lock
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: SwitchListTile(
+                    title: Text(
+                      'Biometric Lock',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    ),
+                    subtitle: const Text(
+                      'Require fingerprint on startup',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    value: _biometricLock,
+                    onChanged: (value) {
+                      accessibilityProvider.provideFeedback(
+                        text: value ? 'Biometric lock enabled' : 'Biometric lock disabled',
+                      );
+                      _toggleBiometric(value);
+                    },
+                    activeColor: themeProvider.getCurrentPrimaryColor(),
+                    secondary: Icon(
+                      Icons.fingerprint,
+                      color: _biometricLock ? themeProvider.getCurrentPrimaryColor() : Colors.white70,
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // System Settings Button
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: ListTile(
+                    leading: Icon(Icons.settings, color: themeProvider.getCurrentPrimaryColor()),
+                    title: Text(
+                      'System Settings',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    ),
+                    subtitle: const Text(
+                      'Open Android app settings',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 16),
+                    onTap: () async {
+                      accessibilityProvider.provideFeedback(text: 'Opening system settings');
+                      await openAppSettings();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: themeProvider.getCurrentPrimaryColor(),
+                            content: const Text(
+                              'Opening system settings...',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // 24-Hour Format Toggle
+                ValueListenableBuilder(
+                  valueListenable: Hive.box('user_prefs').listenable(),
+                  builder: (context, Box box, _) {
+                    final use24h = box.get('use24h', defaultValue: false);
+                    return Card(
+                      color: Colors.white.withOpacity(0.1),
+                      child: SwitchListTile(
+                        title: Text(
+                          'Use 24-Hour Format',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white),
+                        ),
+                        subtitle: Text(
+                          use24h ? 'Time shown as 14:30' : 'Time shown as 2:30 PM',
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        value: use24h,
+                        onChanged: (value) async {
+                          accessibilityProvider.provideFeedback(
+                            text: value ? '24-hour format enabled' : '12-hour format enabled',
+                          );
+                          await box.put('use24h', value);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: themeProvider.getCurrentPrimaryColor(),
+                                content: Text(
+                                  value ? '24-hour format enabled' : '12-hour format enabled',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          }
+                        },
+                        activeColor: themeProvider.getCurrentPrimaryColor(),
+                        secondary: Icon(
+                          Icons.access_time,
+                          color: use24h ? themeProvider.getCurrentPrimaryColor() : Colors.white70,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // Logout Button
+                Card(
+                  color: Colors.red.withOpacity(0.2),
+                  child: ListTile(
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: Text(
+                      'Logout',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Sign out of your account',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.red, size: 16),
+                    onTap: () {
+                      accessibilityProvider.provideFeedback(text: 'Logout');
+                      _logout();
+                    },
+                  ),
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // App Info
+                Text(
+                  'About',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: ListTile(
+                    leading: Icon(Icons.info_outline, color: themeProvider.getCurrentPrimaryColor()),
+                    title: const Text(
+                      'Version',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    trailing: const Text(
+                      '1.0.0',
+                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    ),
+                  ),
+                ),
+                
+                Card(
+                  color: Colors.white.withOpacity(0.1),
+                  child: ListTile(
+                    leading: Icon(Icons.code, color: themeProvider.getCurrentPrimaryColor()),
+                    title: const Text(
+                      'FluxFlow - Ultimate Student OS',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    subtitle: const Text(
+                      'Developed by Masthan Valli',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            
-            const SizedBox(height: 32),
-            
-            // Logout Button
-            Card(
-              color: Colors.red.shade900.withOpacity(0.3),
-              child: ListTile(
-                leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                subtitle: const Text(
-                  'Sign out of your account',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.red, size: 16),
-                onTap: _logout,
-              ),
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // App Info
-            const Text(
-              'About',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.cyanAccent,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              color: Colors.grey.shade900,
-              child: const ListTile(
-                leading: Icon(Icons.info_outline, color: Colors.cyanAccent),
-                title: Text(
-                  'Version',
-                  style: TextStyle(color: Colors.white),
-                ),
-                trailing: Text(
-                  '1.0.0',
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
-              ),
-            ),
-            
-            Card(
-              color: Colors.grey.shade900,
-              child: const ListTile(
-                leading: Icon(Icons.code, color: Colors.cyanAccent),
-                title: Text(
-                  'NovaMind - Ultimate Student OS',
-                  style: TextStyle(color: Colors.white),
-                ),
-                subtitle: Text(
-                  'Developed by Masthan Valli',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

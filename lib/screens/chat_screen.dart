@@ -1,7 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../services/chat_enhanced_service.dart';
+import '../widgets/emoji_reaction_picker.dart';
+import '../widgets/poll_creator_dialog.dart';
+import '../widgets/poll_widget.dart';
+import '../widgets/disappearing_message_dialog.dart';
+import '../widgets/pinned_messages_banner.dart';
+import '../widgets/typing_indicator.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -21,6 +29,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Map<String, dynamic>? _replyingTo;
   bool _isSearching = false;
   String _searchQuery = '';
+  Duration? _disappearingDuration;
+  Timer? _typingTimer;
 
   @override
   void initState() {
@@ -112,6 +122,8 @@ class _ChatScreenState extends State<ChatScreen> {
     _searchController.dispose();
     _scrollController.dispose();
     _focusNode.dispose();
+    _typingTimer?.cancel();
+    ChatEnhancedService.setTyping(false);
     super.dispose();
   }
 
@@ -120,24 +132,38 @@ class _ChatScreenState extends State<ChatScreen> {
     if (message.isEmpty) return;
 
     try {
-      final messageData = <String, dynamic>{
-        'sender': _currentUser,
-        'message': message,
-        'created_at': DateTime.now().toIso8601String(),
-      };
-      
-      if (_replyingTo != null) {
-        messageData['reply_to'] = _replyingTo!['id'] as int;
-        messageData['reply_message'] = _replyingTo!['message'] as String;
-        messageData['reply_sender'] = _replyingTo!['sender'] as String;
-      }
+      // Check if disappearing message
+      if (_disappearingDuration != null) {
+        await ChatEnhancedService.sendDisappearingMessage(
+          message: message,
+          expiresIn: _disappearingDuration!,
+          replyToId: _replyingTo?['id'] as int?,
+        );
+      } else {
+        // Regular message
+        final messageData = <String, dynamic>{
+          'sender': _currentUser,
+          'message': message,
+          'created_at': DateTime.now().toIso8601String(),
+        };
+        
+        if (_replyingTo != null) {
+          messageData['reply_to'] = _replyingTo!['id'] as int;
+          messageData['reply_message'] = _replyingTo!['message'] as String;
+          messageData['reply_sender'] = _replyingTo!['sender'] as String;
+        }
 
-      await Supabase.instance.client.from('chat_messages').insert(messageData);
+        await Supabase.instance.client.from('chat_messages').insert(messageData);
+      }
 
       _messageController.clear();
       setState(() {
         _replyingTo = null;
+        _disappearingDuration = null;
       });
+      
+      // Stop typing indicator
+      ChatEnhancedService.setTyping(false);
       
       // Scroll to bottom
       Future.delayed(const Duration(milliseconds: 100), () {
@@ -216,25 +242,187 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _showReactionPicker(int messageId) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey.shade900,
-        title: const Text('React to message', style: TextStyle(color: Colors.white)),
-        content: Wrap(
-          spacing: 12,
-          children: ['❤️', '😂', '👍', '👎', '😮', '🎉'].map((emoji) {
-            return GestureDetector(
-              onTap: () {
-                _reactToMessage(messageId, emoji);
-                Navigator.pop(context);
-              },
-              child: Text(emoji, style: const TextStyle(fontSize: 32)),
-            );
-          }).toList(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => EmojiReactionPicker(
+        onEmojiSelected: (emoji) async {
+          await _reactToMessage(messageId, emoji);
+        },
+      ),
+    );
+  }
+
+  // Show disappearing message dialog
+  Future<void> _showDisappearingDialog() async {
+    final duration = await showDialog<Duration>(
+      context: context,
+      builder: (context) => const DisappearingMessageDialog(),
+    );
+    
+    if (duration != null) {
+      setState(() {
+        _disappearingDuration = duration;
+      });
+    }
+  }
+
+  // Show poll creator
+  Future<void> _showPollCreator() async {
+    final created = await showDialog<bool>(
+      context: context,
+      builder: (context) => const PollCreatorDialog(),
+    );
+    
+    if (created == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Poll created!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  // Show bookmarks
+  Future<void> _showBookmarks() async {
+    final bookmarks = await ChatEnhancedService.getBookmarkedMessages();
+    
+    if (!mounted) return;
+    
+    if (bookmarks.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No bookmarked messages')),
+      );
+      return;
+    }
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey.shade900,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Bookmarked Messages',
+              style: GoogleFonts.orbitron(
+                color: Colors.cyanAccent,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: bookmarks.length,
+                itemBuilder: (context, index) {
+                  final msg = bookmarks[index];
+                  return ListTile(
+                    title: Text(
+                      msg['sender'],
+                      style: const TextStyle(color: Colors.cyanAccent),
+                    ),
+                    subtitle: Text(
+                      msg['message'],
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.bookmark_remove, color: Colors.red),
+                      onPressed: () async {
+                        await ChatEnhancedService.unbookmarkMessage(msg['id']);
+                        Navigator.pop(context);
+                        _showBookmarks(); // Refresh
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  // Typing indicator handler
+  void _onTypingChanged(String text) {
+    _typingTimer?.cancel();
+    
+    if (text.isNotEmpty) {
+      ChatEnhancedService.setTyping(true);
+      _typingTimer = Timer(const Duration(seconds: 3), () {
+        ChatEnhancedService.setTyping(false);
+      });
+    } else {
+      ChatEnhancedService.setTyping(false);
+    }
+  }
+
+  // Format duration for display
+  String _formatDuration(Duration duration) {
+    if (duration.inDays > 0) {
+      return '${duration.inDays} day${duration.inDays > 1 ? 's' : ''}';
+    } else if (duration.inHours > 0) {
+      return '${duration.inHours} hour${duration.inHours > 1 ? 's' : ''}';
+    } else {
+      return '${duration.inMinutes} minute${duration.inMinutes > 1 ? 's' : ''}';
+    }
+  }
+
+  // Format time remaining for disappearing messages
+  String _formatTimeRemaining(Duration duration) {
+    if (duration.inHours > 0) {
+      return '${duration.inHours}h ${duration.inMinutes % 60}m';
+    } else if (duration.inMinutes > 0) {
+      return '${duration.inMinutes}m';
+    } else {
+      return '${duration.inSeconds}s';
+    }
+  }
+
+  // Pin/unpin message (teacher only)
+  Future<void> _togglePin(int messageId, bool isPinned) async {
+    if (_currentRole != 'teacher') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Only teachers can pin messages')),
+      );
+      return;
+    }
+    
+    final success = isPinned
+        ? await ChatEnhancedService.unpinMessage(messageId)
+        : await ChatEnhancedService.pinMessage(messageId);
+    
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isPinned ? 'Message unpinned' : 'Message pinned'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  // Bookmark message
+  Future<void> _toggleBookmark(int messageId) async {
+    // Check if already bookmarked
+    final isBookmarked = await ChatEnhancedService.isBookmarked(messageId);
+    
+    final success = isBookmarked
+        ? await ChatEnhancedService.unbookmarkMessage(messageId)
+        : await ChatEnhancedService.bookmarkMessage(messageId);
+    
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isBookmarked ? 'Bookmark removed' : 'Message bookmarked'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
 
   @override
@@ -281,6 +469,11 @@ class _ChatScreenState extends State<ChatScreen> {
         iconTheme: const IconThemeData(color: Colors.cyanAccent),
         actions: [
           IconButton(
+            icon: const Icon(Icons.bookmark_border),
+            onPressed: _showBookmarks,
+            tooltip: 'Bookmarks',
+          ),
+          IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
             onPressed: () {
               setState(() {
@@ -296,6 +489,15 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
+          // Pinned messages banner
+          PinnedMessagesBanner(
+            onMessageTap: (message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Pinned: ${message['message']}')),
+              );
+            },
+          ),
+          
           // Messages List - Takes all available space
           Expanded(
             child: Column(
@@ -444,6 +646,8 @@ class _ChatScreenState extends State<ChatScreen> {
                               replyTo: msg['reply_message'],
                               replySender: msg['reply_sender'],
                               reactions: msg['reactions'],
+                              messageType: msg['message_type'],
+                              expiresAt: msg['expires_at'],
                             );
                           },
                         );
@@ -454,6 +658,9 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
           ),
+
+          // Typing indicator
+          const TypingIndicator(),
 
           // Input Bar - Pinned to bottom with extra padding for bottom nav
           Container(
@@ -525,8 +732,61 @@ class _ChatScreenState extends State<ChatScreen> {
                       ],
                     ),
                   ),
+                
+                // Disappearing message indicator
+                if (_disappearingDuration != null)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.timer, color: Colors.orange, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Message will disappear after ${_formatDuration(_disappearingDuration!)}',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.orange,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.orange, size: 16),
+                          onPressed: () {
+                            setState(() {
+                              _disappearingDuration = null;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                
                 Row(
                   children: [
+                    // Timer button
+                    IconButton(
+                      icon: Icon(
+                        Icons.timer,
+                        color: _disappearingDuration != null ? Colors.orange : Colors.grey,
+                      ),
+                      onPressed: _showDisappearingDialog,
+                      tooltip: 'Disappearing message',
+                    ),
+                    
+                    // Poll button
+                    IconButton(
+                      icon: const Icon(Icons.poll, color: Colors.cyanAccent),
+                      onPressed: _showPollCreator,
+                      tooltip: 'Create poll',
+                    ),
+                    
                     Expanded(
                       child: TextField(
                         controller: _messageController,
@@ -549,6 +809,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         maxLines: null,
                         textInputAction: TextInputAction.send,
                         onSubmitted: (_) => _sendMessage(),
+                        onChanged: _onTypingChanged,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -589,7 +850,16 @@ class _ChatScreenState extends State<ChatScreen> {
     String? replyTo,
     String? replySender,
     dynamic reactions,
+    String? messageType,
+    String? expiresAt,
   }) {
+    // Check if it's a poll
+    if (messageType == 'poll') {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: PollWidget(messageId: messageId),
+      );
+    }
     return GestureDetector(
       onLongPress: () {
         showModalBottomSheet(
@@ -616,6 +886,23 @@ class _ChatScreenState extends State<ChatScreen> {
                     _showReactionPicker(messageId);
                   },
                 ),
+                ListTile(
+                  leading: const Icon(Icons.bookmark_border, color: Colors.blue),
+                  title: const Text('Bookmark', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _toggleBookmark(messageId);
+                  },
+                ),
+                if (_currentRole == 'teacher')
+                  ListTile(
+                    leading: const Icon(Icons.push_pin, color: Colors.orange),
+                    title: const Text('Pin Message', style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _togglePin(messageId, false);
+                    },
+                  ),
                 if (sender == _currentUser || _currentRole == 'teacher')
                   ListTile(
                     leading: const Icon(Icons.delete, color: Colors.red),
@@ -820,6 +1107,41 @@ class _ChatScreenState extends State<ChatScreen> {
                               );
                             }).toList(),
                           ),
+                        ),
+                      // Disappearing message timer
+                      if (expiresAt != null)
+                        Builder(
+                          builder: (context) {
+                            final timeRemaining = ChatEnhancedService.getTimeRemaining(expiresAt);
+                            if (timeRemaining != null && timeRemaining.inSeconds > 0) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.orange),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.timer, color: Colors.orange, size: 12),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        _formatTimeRemaining(timeRemaining),
+                                        style: GoogleFonts.montserrat(
+                                          color: Colors.orange,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
                         ),
                     ],
                   ),

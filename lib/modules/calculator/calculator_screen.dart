@@ -9,7 +9,7 @@ class CalculatorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 9,
+      length: 12,
       child: Scaffold(
         backgroundColor: const Color(0xFF2A2A2A),
         appBar: AppBar(
@@ -28,13 +28,16 @@ class CalculatorScreen extends StatelessWidget {
             labelColor: Colors.cyanAccent,
             unselectedLabelColor: Colors.grey,
             tabs: const [
+              Tab(icon: Icon(Icons.access_time), text: 'Clock'),
               Tab(icon: Icon(Icons.calculate), text: 'Calc'),
               Tab(icon: Icon(Icons.swap_horiz), text: 'Convert'),
+              Tab(icon: Icon(Icons.currency_exchange), text: 'Currency'),
               Tab(icon: Icon(Icons.school), text: 'CGPA'),
               Tab(icon: Icon(Icons.monitor_weight), text: 'BMI'),
               Tab(icon: Icon(Icons.cake), text: 'Age'),
               Tab(icon: Icon(Icons.functions), text: 'Equation'),
               Tab(icon: Icon(Icons.percent), text: 'Percent'),
+              Tab(icon: Icon(Icons.local_offer), text: 'Discount'),
               Tab(icon: Icon(Icons.restaurant), text: 'Tip'),
               Tab(icon: Icon(Icons.account_balance), text: 'Loan'),
             ],
@@ -42,13 +45,16 @@ class CalculatorScreen extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
+            _RealTimeClockTab(),
             _ScientificCalculatorTab(),
             _ConverterTab(),
+            _CurrencyConverterTab(),
             _CGPATab(),
             _BMITab(),
             _AgeCalculatorTab(),
             _EquationSolverTab(),
             _PercentageTab(),
+            _DiscountCalculatorTab(),
             _TipCalculatorTab(),
             _LoanCalculatorTab(),
           ],
@@ -59,7 +65,304 @@ class CalculatorScreen extends StatelessWidget {
 }
 
 // ============================================
-// TAB 1: Scientific Calculator
+// TAB 1: Real-Time Clock
+// ============================================
+class _RealTimeClockTab extends StatefulWidget {
+  const _RealTimeClockTab();
+
+  @override
+  State<_RealTimeClockTab> createState() => _RealTimeClockTabState();
+}
+
+class _RealTimeClockTabState extends State<_RealTimeClockTab> {
+  late Stream<DateTime> _timeStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _timeStream = Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DateTime>(
+      stream: _timeStream,
+      builder: (context, snapshot) {
+        final now = snapshot.data ?? DateTime.now();
+        final hour = now.hour;
+        final minute = now.minute;
+        final second = now.second;
+        final day = now.day;
+        final month = _getMonthName(now.month);
+        final year = now.year;
+        final weekday = _getWeekdayName(now.weekday);
+        
+        // 12-hour format
+        final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+        final period = hour >= 12 ? 'PM' : 'AM';
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              
+              // Digital Clock Display
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.cyanAccent.withOpacity(0.3),
+                      Colors.blueAccent.withOpacity(0.3),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.cyanAccent, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.cyanAccent.withOpacity(0.3),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Time
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}',
+                          style: GoogleFonts.orbitron(
+                            fontSize: 72,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.cyanAccent,
+                            height: 1.0,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          children: [
+                            const SizedBox(height: 8),
+                            Text(
+                              second.toString().padLeft(2, '0'),
+                              style: GoogleFonts.orbitron(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.cyanAccent.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    // 12-hour format
+                    Text(
+                      '$hour12:${minute.toString().padLeft(2, '0')} $period',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 24,
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // Date Display
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade900,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      weekday,
+                      style: GoogleFonts.montserrat(
+                        fontSize: 28,
+                        color: Colors.cyanAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '$day $month $year',
+                      style: GoogleFonts.montserrat(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // Time Info Cards
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildInfoCard(
+                      'Hour',
+                      hour.toString(),
+                      Icons.access_time,
+                      Colors.purple,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildInfoCard(
+                      'Minute',
+                      minute.toString(),
+                      Icons.timer,
+                      Colors.orange,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildInfoCard(
+                      'Second',
+                      second.toString(),
+                      Icons.timelapse,
+                      Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Additional Info
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade900,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    _buildDetailRow('Day of Year', _getDayOfYear(now).toString()),
+                    const Divider(color: Colors.grey),
+                    _buildDetailRow('Week of Year', _getWeekOfYear(now).toString()),
+                    const Divider(color: Colors.grey),
+                    _buildDetailRow('Days in Month', _getDaysInMonth(now).toString()),
+                    const Divider(color: Colors.grey),
+                    _buildDetailRow('Timezone', now.timeZoneName),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoCard(String label, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.5)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: GoogleFonts.orbitron(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.montserrat(
+              fontSize: 12,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.montserrat(
+              color: Colors.white70,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.orbitron(
+              color: Colors.cyanAccent,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1];
+  }
+
+  String _getWeekdayName(int weekday) {
+    const weekdays = [
+      'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+      'Friday', 'Saturday', 'Sunday'
+    ];
+    return weekdays[weekday - 1];
+  }
+
+  int _getDayOfYear(DateTime date) {
+    final firstDayOfYear = DateTime(date.year, 1, 1);
+    return date.difference(firstDayOfYear).inDays + 1;
+  }
+
+  int _getWeekOfYear(DateTime date) {
+    final firstDayOfYear = DateTime(date.year, 1, 1);
+    final daysSinceFirstDay = date.difference(firstDayOfYear).inDays;
+    return (daysSinceFirstDay / 7).ceil() + 1;
+  }
+
+  int _getDaysInMonth(DateTime date) {
+    final nextMonth = DateTime(date.year, date.month + 1, 1);
+    final lastDayOfMonth = nextMonth.subtract(const Duration(days: 1));
+    return lastDayOfMonth.day;
+  }
+}
+
+// ============================================
+// TAB 2: Scientific Calculator
 // ============================================
 class _ScientificCalculatorTab extends StatefulWidget {
   const _ScientificCalculatorTab();
@@ -547,7 +850,138 @@ class _ConverterTabState extends State<_ConverterTab> {
 }
 
 // ============================================
-// TAB 3: CGPA Calculator
+// TAB 3: Currency Converter
+// ============================================
+class _CurrencyConverterTab extends StatefulWidget {
+  const _CurrencyConverterTab();
+
+  @override
+  State<_CurrencyConverterTab> createState() => _CurrencyConverterTabState();
+}
+
+class _CurrencyConverterTabState extends State<_CurrencyConverterTab> {
+  String _fromCurrency = 'USD';
+  String _toCurrency = 'INR';
+  final TextEditingController _inputController = TextEditingController(text: '1');
+  String _output = '83.12';
+
+  final Map<String, Map<String, dynamic>> _currencies = {
+    'USD': {'name': 'US Dollar', 'rate': 1.0, 'symbol': '\$'},
+    'EUR': {'name': 'Euro', 'rate': 0.92, 'symbol': '€'},
+    'GBP': {'name': 'British Pound', 'rate': 0.79, 'symbol': '£'},
+    'INR': {'name': 'Indian Rupee', 'rate': 83.12, 'symbol': '₹'},
+    'JPY': {'name': 'Japanese Yen', 'rate': 149.50, 'symbol': '¥'},
+    'AUD': {'name': 'Australian Dollar', 'rate': 1.52, 'symbol': 'A\$'},
+    'CAD': {'name': 'Canadian Dollar', 'rate': 1.36, 'symbol': 'C\$'},
+  };
+
+  void _convert() {
+    final input = double.tryParse(_inputController.text) ?? 0;
+    final fromRate = _currencies[_fromCurrency]!['rate'] as double;
+    final toRate = _currencies[_toCurrency]!['rate'] as double;
+    final usdAmount = input / fromRate;
+    final result = usdAmount * toRate;
+    setState(() {
+      _output = result.toStringAsFixed(2);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _inputController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 24),
+                  decoration: const InputDecoration(
+                    labelText: 'Amount',
+                    labelStyle: TextStyle(color: Colors.cyanAccent),
+                  ),
+                  onChanged: (_) => _convert(),
+                ),
+                const SizedBox(height: 16),
+                DropdownButton<String>(
+                  value: _fromCurrency,
+                  isExpanded: true,
+                  dropdownColor: Colors.grey.shade800,
+                  style: const TextStyle(color: Colors.white),
+                  items: _currencies.keys.map((code) {
+                    return DropdownMenuItem(
+                      value: code,
+                      child: Text('$code - ${_currencies[code]!['name']}'),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _fromCurrency = val!;
+                      _convert();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Icon(Icons.arrow_downward, color: Colors.cyanAccent, size: 30),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.cyanAccent.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.cyanAccent),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  _output,
+                  style: GoogleFonts.orbitron(
+                    color: Colors.cyanAccent,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                DropdownButton<String>(
+                  value: _toCurrency,
+                  isExpanded: true,
+                  dropdownColor: Colors.grey.shade800,
+                  style: const TextStyle(color: Colors.white),
+                  items: _currencies.keys.map((code) {
+                    return DropdownMenuItem(
+                      value: code,
+                      child: Text('$code - ${_currencies[code]!['name']}'),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _toCurrency = val!;
+                      _convert();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================
+// TAB 4: CGPA Calculator
 // ============================================
 class _CGPATab extends StatefulWidget {
   const _CGPATab();
@@ -1707,7 +2141,159 @@ class _PercentageTabState extends State<_PercentageTab> {
 }
 
 // ============================================
-// TAB 8: Tip Calculator
+// TAB 9: Discount Calculator
+// ============================================
+class _DiscountCalculatorTab extends StatefulWidget {
+  const _DiscountCalculatorTab();
+
+  @override
+  State<_DiscountCalculatorTab> createState() => _DiscountCalculatorTabState();
+}
+
+class _DiscountCalculatorTabState extends State<_DiscountCalculatorTab> {
+  final TextEditingController _originalPriceController = TextEditingController();
+  final TextEditingController _discountController = TextEditingController();
+  
+  double _discountAmount = 0;
+  double _finalPrice = 0;
+
+  void _calculate() {
+    final originalPrice = double.tryParse(_originalPriceController.text) ?? 0;
+    final discountPercent = double.tryParse(_discountController.text) ?? 0;
+
+    setState(() {
+      _discountAmount = originalPrice * (discountPercent / 100);
+      _finalPrice = originalPrice - _discountAmount;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade900,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _originalPriceController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 24),
+                  decoration: const InputDecoration(
+                    labelText: 'Original Price (\$)',
+                    labelStyle: TextStyle(color: Colors.cyanAccent),
+                  ),
+                  onChanged: (_) => _calculate(),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _discountController,
+                  keyboardType: TextInputType.number,
+                  style: const TextStyle(color: Colors.white, fontSize: 24),
+                  decoration: const InputDecoration(
+                    labelText: 'Discount (%)',
+                    labelStyle: TextStyle(color: Colors.red),
+                  ),
+                  onChanged: (_) => _calculate(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 30),
+          if (_finalPrice > 0) ...[
+            Container(
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.green, width: 2),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Final Price',
+                    style: GoogleFonts.orbitron(color: Colors.white70, fontSize: 16),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    '\$${_finalPrice.toStringAsFixed(2)}',
+                    style: GoogleFonts.orbitron(
+                      color: Colors.greenAccent,
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade900,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Original Price',
+                        style: GoogleFonts.montserrat(color: Colors.white70),
+                      ),
+                      Text(
+                        '\$${_originalPriceController.text}',
+                        style: GoogleFonts.orbitron(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.grey),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Discount',
+                        style: GoogleFonts.montserrat(color: Colors.white70),
+                      ),
+                      Text(
+                        '- \$${_discountAmount.toStringAsFixed(2)}',
+                        style: GoogleFonts.orbitron(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                  const Divider(color: Colors.grey),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'You Save',
+                        style: GoogleFonts.montserrat(color: Colors.white70),
+                      ),
+                      Text(
+                        '\$${_discountAmount.toStringAsFixed(2)}',
+                        style: GoogleFonts.orbitron(color: Colors.greenAccent),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================
+// TAB 10: Tip Calculator
 // ============================================
 class _TipCalculatorTab extends StatefulWidget {
   const _TipCalculatorTab();

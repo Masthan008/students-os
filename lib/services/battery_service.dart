@@ -28,14 +28,7 @@ class BatteryService {
       
       if (status.isGranted) {
         debugPrint('✅ Battery optimization disabled successfully');
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Battery optimization disabled - Alarms will work reliably!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
+        // Snackbar removed - silent success
         return true;
       } else {
         debugPrint('❌ Battery optimization permission denied');
